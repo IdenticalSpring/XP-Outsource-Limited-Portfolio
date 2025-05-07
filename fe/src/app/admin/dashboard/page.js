@@ -7,19 +7,15 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import styles from "./page.module.css";
 
-export default function AdminDashboard({ searchParams }) {
+export default function AdminDashboard() {
   const router = useRouter();
-  const isAdmin = searchParams.admin === "true";
 
   useEffect(() => {
-    if (!isAdmin) {
-      router.push("/");
+    const token = localStorage.getItem("adminToken");
+    if (!token) {
+      router.push("/admin/login");
     }
-  }, [isAdmin, router]);
-
-  if (!isAdmin) {
-    return null;
-  }
+  }, [router]);
 
   const columns = [
     { title: "ID", dataIndex: "id", key: "id" },
@@ -40,14 +36,19 @@ export default function AdminDashboard({ searchParams }) {
     },
   ];
 
+  const handleLogout = () => {
+    localStorage.removeItem("adminToken");
+    router.push("/admin/login");
+  };
+
   return (
     <div>
       <Header />
       <div className={styles.container}>
         <h2>Admin Dashboard</h2>
         <Table columns={columns} dataSource={data} rowKey="id" />
-        <Button type="primary" onClick={() => router.push("/")}>
-          Back to Home
+        <Button type="primary" onClick={handleLogout}>
+          Logout
         </Button>
       </div>
       <Footer />

@@ -1,5 +1,5 @@
 .container {
-  max-width: 1200px;
+  max-width: 400px;
   margin: 60px auto;
   padding: 0 20px;
   text-align: center;
@@ -9,4 +9,11 @@
   font-size: 2rem;
   color: #003087;
   margin-bottom: 30px;
+}
+
+.form {
+  text-align: left;
+  background: #f0f2f5;
+  padding: 20px;
+  border-radius: 8px;
 }
