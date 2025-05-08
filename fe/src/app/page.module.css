@@ -1,37 +1,488 @@
-.hero {
+.container {
+  overflow-x: hidden;
+}
+
+/* Hero Section */
+.heroSection {
+  position: relative;
+  height: 100vh;
+  min-height: 600px;
+}
+
+.carousel {
+  height: 100%;
+}
+
+.heroSlide {
+  height: 100vh;
+  min-height: 600px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.heroSlide::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.7) 0%,
+    rgba(0, 0, 0, 0.4) 50%,
+    rgba(0, 0, 0, 0.2) 100%
+  );
+}
+
+.heroContent {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 20px;
+  position: relative;
+  z-index: 10;
   text-align: center;
-  padding: 80px 20px;
-  background: linear-gradient(135deg, #003087 0%, #00a1de 100%);
+  margin-top: 80px; /* Account for header */
+}
+
+.heroContent h1 {
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 20px;
+  line-height: 1.2;
+}
+
+.heroContent p {
+  font-size: 1.5rem;
+  color: white;
+  margin-bottom: 30px;
+  opacity: 0.9;
+}
+
+.heroButton {
+  height: 50px;
+  padding: 0 30px;
+  font-size: 1.1rem;
+  background: #f15a22;
+  border: none;
+  border-radius: 4px;
+  transition: all 0.3s;
+}
+
+.heroButton:hover {
+  background: #d84a14;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 15px rgba(241, 90, 34, 0.3);
+}
+
+.carouselNavigation {
+  position: absolute;
+  bottom: 60px;
+  right: 60px;
+  display: flex;
+  gap: 10px;
+  z-index: 100;
+}
+
+.navButton {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  background: transparent;
+  color: white;
+  border-radius: 50%;
+  transition: all 0.3s;
+}
+
+.navButton:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: white;
   color: white;
 }
 
-.hero h1 {
-  font-size: 3rem;
-  margin-bottom: 20px;
-}
-
-.hero p {
-  font-size: 1.2rem;
-  margin-bottom: 30px;
-}
-
-.section {
-  padding: 60px 20px;
+/* Common Section Styles */
+.sectionContainer {
   max-width: 1200px;
   margin: 0 auto;
-  text-align: center;
+  padding: 0 20px;
 }
 
-.section h2 {
+.sectionHeader {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.sectionHeader h2 {
   font-size: 2.5rem;
-  margin-bottom: 30px;
-  color: #003087;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 15px;
+  position: relative;
+  display: inline-block;
+}
+
+.sectionHeader h2::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: #f15a22;
+}
+
+.sectionHeader p {
+  font-size: 1.1rem;
+  color: #666;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+/* Services Section */
+.servicesSection {
+  padding: 100px 0;
+  background-color: #f9f9f9;
 }
 
 .serviceCard {
-  transition: transform 0.3s;
+  height: 100%;
+  text-align: center;
+  padding: 40px 20px;
+  border-radius: 8px;
+  transition: all 0.3s;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
 }
 
 .serviceCard:hover {
-  transform: translateY(-5px);
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.serviceIcon {
+  margin-bottom: 20px;
+  color: #f15a22;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.serviceCard h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.serviceCard p {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.learnMoreBtn {
+  color: #f15a22;
+  font-weight: 500;
+  padding: 0;
+  height: auto;
+}
+
+.learnMoreBtn:hover {
+  color: #d84a14;
+}
+
+/* About Section */
+.aboutSection {
+  padding: 100px 0;
+  background-color: white;
+}
+
+.aboutImage {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.placeholderImage {
+  width: 100%;
+  height: 400px;
+  background-color: #eee;
+  border-radius: 8px;
+  background-image: linear-gradient(
+    45deg,
+    #f5f5f5 25%,
+    transparent 25%,
+    transparent 50%,
+    #f5f5f5 50%,
+    #f5f5f5 75%,
+    transparent 75%,
+    transparent
+  );
+  background-size: 20px 20px;
+}
+
+.aboutContent h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.aboutContent h2::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background: #f15a22;
+}
+
+.aboutDescription {
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 30px;
+  margin-top: 30px;
+}
+
+.aboutFeatures {
+  margin-bottom: 30px;
+}
+
+.featureItem {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.featureIcon {
+  font-size: 1.5rem;
+  color: #f15a22;
+  margin-right: 15px;
+  min-width: 40px;
+}
+
+.featureItem h4 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.featureItem p {
+  font-size: 1rem;
+  color: #666;
+  margin: 0;
+}
+
+.aboutButton {
+  background: #f15a22;
+  border: none;
+  height: 45px;
+  padding: 0 25px;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.aboutButton:hover {
+  background: #d84a14;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(241, 90, 34, 0.2);
+}
+
+/* Achievements Section */
+.achievementsSection {
+  padding: 80px 0;
+  background-color: #222;
+  color: white;
+}
+
+.achievementItem {
+  text-align: center;
+  padding: 20px;
+}
+
+.achievementItem h3 {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #f15a22;
+  margin-bottom: 10px;
+}
+
+.achievementItem p {
+  font-size: 1.1rem;
+  color: #fff;
+}
+
+/* Partners Section */
+.partnersSection {
+  padding: 80px 0;
+  background-color: #f9f9f9;
+}
+
+.partnerLogos {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 30px;
+}
+
+.partnerLogo {
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+}
+
+.logoPlaceholder {
+  height: 60px;
+  width: 120px;
+  background-color: #eee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-weight: 500;
+  border-radius: 4px;
+}
+
+/* CTA Section */
+.ctaSection {
+  padding: 100px 0;
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.7) 0%,
+    rgba(0, 0, 0, 0.4) 50%,
+    rgba(0, 0, 0, 0.2) 100%
+  );
+  color: white;
+  text-align: center;
+}
+
+.ctaContent {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.ctaContent h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.ctaContent p {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+  opacity: 0.9;
+}
+
+.ctaButton {
+  height: 50px;
+  padding: 0 30px;
+  font-size: 1.1rem;
+  background: #f15a22;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.ctaButton:hover {
+  background: #d84a14;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .heroContent h1 {
+    font-size: 3rem;
+  }
+
+  .heroContent p {
+    font-size: 1.3rem;
+  }
+
+  .sectionHeader h2,
+  .aboutContent h2,
+  .ctaContent h2 {
+    font-size: 2.2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .heroSection,
+  .heroSlide {
+    height: 80vh;
+  }
+
+  .heroContent h1 {
+    font-size: 2.5rem;
+  }
+
+  .heroContent p {
+    font-size: 1.1rem;
+  }
+
+  .carouselNavigation {
+    bottom: 30px;
+    right: 30px;
+  }
+
+  .servicesSection,
+  .aboutSection,
+  .ctaSection {
+    padding: 60px 0;
+  }
+
+  .sectionHeader {
+    margin-bottom: 40px;
+  }
+
+  .sectionHeader h2,
+  .aboutContent h2,
+  .ctaContent h2 {
+    font-size: 2rem;
+  }
+
+  .achievementItem h3 {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .heroContent h1 {
+    font-size: 2rem;
+  }
+
+  .heroButton,
+  .ctaButton {
+    height: 45px;
+    padding: 0 20px;
+    font-size: 1rem;
+  }
+
+  .sectionHeader h2,
+  .aboutContent h2,
+  .ctaContent h2 {
+    font-size: 1.8rem;
+  }
+
+  .achievementItem h3 {
+    font-size: 2rem;
+  }
 }

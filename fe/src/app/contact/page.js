@@ -1,5 +1,4 @@
 "use client";
-
 import { Button, Form, Input } from "antd";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -12,50 +11,64 @@ export default function Contact() {
   };
 
   return (
-    <div>
+    <div className={styles.container}>
       <Header />
-      <div className={styles.container}>
-        <h2>Contact Us</h2>
-        <Form
-          name="contact"
-          layout="vertical"
-          onFinish={onFinish}
-          className={styles.form}
-        >
-          <Form.Item
-            label="Name"
-            name="name"
-            rules={[{ required: true, message: "Please enter your name" }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            label="Email"
-            name="email"
-            rules={[
-              {
-                required: true,
-                type: "email",
-                message: "Please enter a valid email",
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            label="Message"
-            name="message"
-            rules={[{ required: true, message: "Please enter your message" }]}
-          >
-            <Input.TextArea rows={4} />
-          </Form.Item>
-          <Form.Item>
-            <Button type="primary" htmlType="submit">
-              Send Message
-            </Button>
-          </Form.Item>
-        </Form>
-      </div>
+      <section className={styles.ctaSection}>
+        <div className={styles.sectionContainer}>
+          <div className={styles.ctaContent}>
+            <h2>Contact Us</h2>
+            <p>
+              Reach out to discuss your technology needs and how we can help
+              transform your business.
+            </p>
+            <Form
+              name="contact"
+              layout="vertical"
+              onFinish={onFinish}
+              className={styles.form}
+            >
+              <Form.Item
+                label="Name"
+                name="name"
+                rules={[{ required: true, message: "Please enter your name" }]}
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item
+                label="Email"
+                name="email"
+                rules={[
+                  {
+                    required: true,
+                    type: "email",
+                    message: "Please enter a valid email",
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item
+                label="Message"
+                name="message"
+                rules={[
+                  { required: true, message: "Please enter your message" },
+                ]}
+              >
+                <Input.TextArea rows={4} />
+              </Form.Item>
+              <Form.Item>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  className={styles.ctaButton}
+                >
+                  Send Message
+                </Button>
+              </Form.Item>
+            </Form>
+          </div>
+        </div>
+      </section>
       <Footer />
     </div>
   );
