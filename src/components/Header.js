@@ -8,6 +8,7 @@ import { MenuOutlined, SearchOutlined, DownOutlined } from "@ant-design/icons";
 import { useTranslations, useLocale } from "next-intl";
 import { setCookie } from "cookies-next";
 import styles from "./Header.module.css";
+import { languages, menuConfig } from "../config/headerConfig";
 
 export default function Header() {
   const [visible, setVisible] = useState(false);
@@ -17,18 +18,6 @@ export default function Header() {
   const router = useRouter();
   const t = useTranslations();
   const locale = useLocale();
-
-  // Định nghĩa cờ và tên ngôn ngữ
-  const languages = {
-    en: {
-      name: "English",
-      flag: "🇺🇸"
-    },
-    vi: {
-      name: "Tiếng Việt",
-      flag: "🇻🇳"
-    }
-  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -41,19 +30,18 @@ export default function Header() {
     };
 
     window.addEventListener("scroll", handleScroll);
-    
-    // Đóng dropdown khi click ra ngoài
+
     const handleClickOutside = (e) => {
       if (!e.target.closest(`.${styles.languageDropdown}`)) {
         setDropdownOpen(false);
       }
     };
-    
-    document.addEventListener('click', handleClickOutside);
-    
+
+    document.addEventListener("click", handleClickOutside);
+
     return () => {
       window.removeEventListener("scroll", handleScroll);
-      document.removeEventListener('click', handleClickOutside);
+      document.removeEventListener("click", handleClickOutside);
     };
   }, []);
 
@@ -73,77 +61,28 @@ export default function Header() {
     }
   };
 
-  const menuItems = [
-    {
-      key: "home",
-      label:
-        pathname === `/${locale}` ? (
-          <a
-            href="#home"
-            onClick={(e) => {
-              e.preventDefault();
+  const menuItems = menuConfig.map((item) => ({
+    key: item.key,
+    label:
+      pathname === `/${locale}` ? (
+        <a
+          href={item.href}
+          onClick={(e) => {
+            e.preventDefault();
+            if (item.key === "home") {
               window.scrollTo({ top: 0, behavior: "smooth" });
-              setVisible(false);
-            }}
-          >
-            {t("home")}
-          </a>
-        ) : (
-          <Link href={`/${locale}`}>{t("home")}</Link>
-        ),
-    },
-    {
-      key: "services",
-      label:
-        pathname === `/${locale}` ? (
-          <a
-            href="#services"
-            onClick={(e) => {
-              e.preventDefault();
-              handleScrollTo("services");
-            }}
-          >
-            {t("services")}
-          </a>
-        ) : (
-          <Link href="/services">{t("services")}</Link>
-        ),
-    },
-    {
-      key: "about",
-      label:
-        pathname === `/${locale}` ? (
-          <a
-            href="#about"
-            onClick={(e) => {
-              e.preventDefault();
-              handleScrollTo("about");
-            }}
-          >
-            {t("about")}
-          </a>
-        ) : (
-          <Link href="/about">{t("about")}</Link>
-        ),
-    },
-    {
-      key: "contact",
-      label:
-        pathname === `/${locale}` ? (
-          <a
-            href="#contact"
-            onClick={(e) => {
-              e.preventDefault();
-              handleScrollTo("contact");
-            }}
-          >
-            {t("contact")}
-          </a>
-        ) : (
-          <Link href="/contact">{t("contact")}</Link>
-        ),
-    },
-  ];
+            } else {
+              handleScrollTo(item.key);
+            }
+            setVisible(false);
+          }}
+        >
+          {t(item.translationKey)}
+        </a>
+      ) : (
+        <Link href={item.link}>{t(item.translationKey)}</Link>
+      ),
+  }));
 
   return (
     <div className={`${styles.header} ${scrolled ? styles.scrolled : ""}`}>
@@ -169,11 +108,11 @@ export default function Header() {
             >
               {t("getStarted")}
             </Button>
-            
+
             {/* Cải thiện language dropdown */}
             <div className={styles.languageDropdown}>
               <div
-                className={`${styles.dropdownTrigger} ${dropdownOpen ? styles.dropdownOpen : ''}`}
+                className={`${styles.dropdownTrigger} ${dropdownOpen ? styles.dropdownOpen : ""}`}
                 onClick={(e) => {
                   e.stopPropagation();
                   setDropdownOpen(!dropdownOpen);
@@ -183,13 +122,13 @@ export default function Header() {
                 <span>{languages[locale].name}</span>
                 <DownOutlined className={styles.dropdownArrow} />
               </div>
-              
+
               {dropdownOpen && (
                 <div className={styles.dropdownMenu}>
                   {Object.keys(languages).map((lang) => (
                     <div
                       key={lang}
-                      className={`${styles.dropdownItem} ${locale === lang ? styles.active : ''}`}
+                      className={`${styles.dropdownItem} ${locale === lang ? styles.active : ""}`}
                       onClick={() => handleLanguageChange(lang)}
                     >
                       <span className={styles.flag}>{languages[lang].flag}</span>
@@ -231,11 +170,11 @@ export default function Header() {
         >
           {t("getStarted")}
         </Button>
-        
+
         {/* Cải thiện mobile language dropdown */}
         <div className={styles.languageDropdown}>
           <div
-            className={`${styles.dropdownTrigger} ${dropdownOpen ? styles.dropdownOpen : ''}`}
+            className={`${styles.dropdownTrigger} ${dropdownOpen ? styles.dropdownOpen : ""}`}
             onClick={(e) => {
               e.stopPropagation();
               setDropdownOpen(!dropdownOpen);
@@ -245,13 +184,13 @@ export default function Header() {
             <span>{languages[locale].name}</span>
             <DownOutlined className={styles.dropdownArrow} />
           </div>
-          
+
           {dropdownOpen && (
             <div className={styles.dropdownMenu}>
               {Object.keys(languages).map((lang) => (
                 <div
                   key={lang}
-                  className={`${styles.dropdownItem} ${locale === lang ? styles.active : ''}`}
+                  className={`${styles.dropdownItem} ${locale === lang ? styles.active : ""}`}
                   onClick={() => handleLanguageChange(lang)}
                 >
                   <span className={styles.flag}>{languages[lang].flag}</span>
