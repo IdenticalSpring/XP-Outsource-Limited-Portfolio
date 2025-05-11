@@ -1,3 +1,4 @@
+/* src/components/Header.module.css */
 .header {
   position: fixed;
   top: 0;
@@ -116,6 +117,127 @@
   box-shadow: 0 4px 10px rgba(241, 90, 34, 0.3);
 }
 
+/* Cải thiện style cho language dropdown */
+.languageDropdown {
+  position: relative;
+  margin-left: 15px;
+  z-index: 100;
+}
+
+.dropdownTrigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  border-radius: 30px;
+  padding: 6px 16px;
+  height: 38px;
+  min-width: 120px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s;
+  backdrop-filter: blur(5px);
+}
+
+.scrolled .dropdownTrigger {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  color: #333;
+}
+
+.dropdownTrigger:hover {
+  border-color: #f15a22;
+  background: rgba(241, 90, 34, 0.1);
+  transform: translateY(-2px);
+}
+
+.dropdownFlag {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dropdownArrow {
+  font-size: 0.8rem;
+  margin-left: 6px;
+  transition: transform 0.3s;
+}
+
+.dropdownOpen .dropdownArrow {
+  transform: rotate(180deg);
+}
+
+.scrolled .dropdownArrow {
+  color: #333;
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: calc(100% + 5px);
+  right: 0;
+  min-width: 140px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-10px);
+  animation: dropdownFadeIn 0.2s forwards;
+}
+
+@keyframes dropdownFadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  padding: 10px 16px;
+  font-size: 0.9rem;
+  color: #333;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.dropdownItem:not(:last-child) {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.dropdownItem:hover {
+  background: rgba(241, 90, 34, 0.1);
+  color: #f15a22;
+}
+
+.dropdownItem.active {
+  background: rgba(241, 90, 34, 0.05);
+  color: #f15a22;
+  font-weight: 500;
+}
+
+.dropdownItem .flag {
+  width: 18px;
+  height: 18px;
+  margin-right: 10px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
 .mobileMenuButton {
   display: none;
 }
@@ -162,5 +284,20 @@
 
   .mobileMenuButton {
     display: block;
+  }
+
+  .mobileDrawer .languageDropdown {
+    width: 100%;
+    margin-top: 20px;
+  }
+  
+  .mobileDrawer .dropdownTrigger {
+    width: 100%;
+    justify-content: center;
+    background: rgba(241, 90, 34, 0.05);
+  }
+  
+  .mobileDrawer .dropdownMenu {
+    width: 100%;
   }
 }

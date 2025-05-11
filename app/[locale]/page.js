@@ -1,55 +1,26 @@
+// app/[locale]/page.js
 "use client";
-import { Button, Card, Col, Row, Carousel } from "antd";
-import { useRef } from "react";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import { services, about } from "@/data/data";
-import Link from "next/link";
+import { Button, Card, Col, Row } from "antd";
+import { useParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import styles from "./page.module.css";
 import {
   FaCode,
   FaMobileAlt,
   FaCloud,
-  FaChevronLeft,
-  FaChevronRight,
   FaLaptopCode,
   FaDatabase,
   FaProjectDiagram,
 } from "react-icons/fa";
+import Header from "../../src/components/Header";
+import Footer from "../../src/components/Footer";
+import BannerCarousel from "../../src/components/Banner";
+import Link from "next/link";
+import { services, about } from "../../src/data/data";
 
 export default function Home() {
-  const carouselRef = useRef(null);
-
-  const heroSlides = [
-    {
-      title: "Empower Your Business with XP OutSource",
-      description:
-        "Leading technology outsourcing solutions for global innovation",
-      buttonText: "Discover Our Services",
-      buttonLink: "#services",
-      image: "/images/hero1.jpg",
-    },
-    {
-      title: "Expert Software Development",
-      description: "Custom solutions tailored to your business needs",
-      buttonText: "See Our Projects",
-      buttonLink: "#services",
-      image: "/images/hero2.jpg",
-    },
-    {
-      title: "Digital Transformation",
-      description: "Navigate the future with our cutting-edge technology",
-      buttonText: "Learn More",
-      buttonLink: "#about",
-      image: "/images/hero3.jpg",
-    },
-  ];
-
-  const serviceIcons = {
-    "Web Development": <FaCode size={40} />,
-    "Mobile App Development": <FaMobileAlt size={40} />,
-    "Cloud Solutions": <FaCloud size={40} />,
-  };
+  const { locale } = useParams();
+  const t = useTranslations();
 
   const techPartners = [
     { name: "Microsoft", logo: "/images/microsoft.png" },
@@ -66,72 +37,34 @@ export default function Home() {
     { number: "100+", text: "Expert Developers" },
   ];
 
+  const serviceIcons = {
+    "Web Development": <FaCode size={40} />,
+    "Mobile App Development": <FaMobileAlt size={40} />,
+    "Cloud Solutions": <FaCloud size={40} />,
+  };
+
   return (
     <div className={styles.container}>
       <Header />
 
-      {/* Hero Section with Carousel */}
-      <section id="home" className={styles.heroSection}>
-        <Carousel
-          autoplay
-          effect="fade"
-          dots={true}
-          ref={carouselRef}
-          className={styles.carousel}
-        >
-          {heroSlides.map((slide, index) => (
-            <div key={index}>
-              <div
-                className={styles.heroSlide}
-                style={{ backgroundImage: `url(${slide.image})` }}
-              >
-                <div className={styles.heroContent}>
-                  <h1>{slide.title}</h1>
-                  <p>{slide.description}</p>
-                  <Link href={slide.buttonLink}>
-                    <Button
-                      type="primary"
-                      size="large"
-                      className={styles.heroButton}
-                    >
-                      {slide.buttonText}
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            </div>
-          ))}
-        </Carousel>
-
-        <div className={styles.carouselNavigation}>
-          <Button
-            className={styles.navButton}
-            onClick={() => carouselRef.current.prev()}
-            icon={<FaChevronLeft />}
-          />
-          <Button
-            className={styles.navButton}
-            onClick={() => carouselRef.current.next()}
-            icon={<FaChevronRight />}
-          />
-        </div>
-      </section>
+      {/* Sử dụng component BannerCarousel */}
+      <BannerCarousel locale={locale} />
 
       {/* Services Section */}
       <section id="services" className={styles.servicesSection}>
         <div className={styles.sectionContainer}>
           <div className={styles.sectionHeader}>
-            <h2>Our Services</h2>
+            <h2>{t("servicesSectionTitle") || "Our Services"}</h2>
             <p>
-              We provide a range of technology solutions to accelerate your
-              business growth
+              {t("servicesSectionDescription") ||
+                "We provide a range of technology solutions to accelerate your business growth"}
             </p>
           </div>
 
           <Row gutter={[32, 32]}>
             {services.map((service) => (
               <Col xs={24} sm={12} md={8} key={service.id}>
-                <Card className={styles.serviceCard} bordered={false}>
+                <Card className={styles.serviceCard} variant="borderless">
                   <div className={styles.serviceIcon}>
                     {serviceIcons[service.title]}
                   </div>
@@ -139,7 +72,7 @@ export default function Home() {
                   <p>{service.description}</p>
                   <Link href={`/services/${service.id}`}>
                     <Button type="link" className={styles.learnMoreBtn}>
-                      Learn More
+                      {t("learnMore") || "Learn More"}
                     </Button>
                   </Link>
                 </Card>
@@ -160,7 +93,7 @@ export default function Home() {
             </Col>
             <Col xs={24} md={12}>
               <div className={styles.aboutContent}>
-                <h2>About XP OutSource</h2>
+                <h2>{t("aboutTitle") || "About XP OutSource"}</h2>
                 <p className={styles.aboutDescription}>{about.mission}</p>
                 <div className={styles.aboutFeatures}>
                   <div className={styles.featureItem}>
@@ -168,8 +101,8 @@ export default function Home() {
                       <FaLaptopCode />
                     </div>
                     <div>
-                      <h4>Expert Team</h4>
-                      <p>Skilled developers with cutting-edge expertise</p>
+                      <h4>{t("expertTeamTitle") || "Expert Team"}</h4>
+                      <p>{t("expertTeamDescription") || "Skilled developers with cutting-edge expertise"}</p>
                     </div>
                   </div>
                   <div className={styles.featureItem}>
@@ -177,8 +110,8 @@ export default function Home() {
                       <FaDatabase />
                     </div>
                     <div>
-                      <h4>Advanced Technology</h4>
-                      <p>Using the latest technologies and frameworks</p>
+                      <h4>{t("advancedTechTitle") || "Advanced Technology"}</h4>
+                      <p>{t("advancedTechDescription") || "Using the latest technologies and frameworks"}</p>
                     </div>
                   </div>
                   <div className={styles.featureItem}>
@@ -186,16 +119,14 @@ export default function Home() {
                       <FaProjectDiagram />
                     </div>
                     <div>
-                      <h4>Agile Process</h4>
-                      <p>
-                        Efficient development with transparent communication
-                      </p>
+                      <h4>{t("agileProcessTitle") || "Agile Process"}</h4>
+                      <p>{t("agileProcessDescription") || "Efficient development with transparent communication"}</p>
                     </div>
                   </div>
                 </div>
                 <Link href="#contact">
                   <Button type="primary" className={styles.aboutButton}>
-                    Learn More About Us
+                    {t("learnMoreAboutUs") || "Learn More About Us"}
                   </Button>
                 </Link>
               </div>
@@ -224,11 +155,8 @@ export default function Home() {
       <section id="partners" className={styles.partnersSection}>
         <div className={styles.sectionContainer}>
           <div className={styles.sectionHeader}>
-            <h2>Our Technology Partners</h2>
-            <p>
-              We collaborate with industry leaders to deliver exceptional
-              solutions
-            </p>
+            <h2>{t("partnersTitle") || "Our Technology Partners"}</h2>
+            <p>{t("partnersDescription") || "We collaborate with industry leaders to deliver exceptional solutions"}</p>
           </div>
 
           <div className={styles.partnerLogos}>
@@ -245,13 +173,11 @@ export default function Home() {
       <section id="contact" className={styles.ctaSection}>
         <div className={styles.sectionContainer}>
           <div className={styles.ctaContent}>
-            <h2>Ready to Transform Your Business?</h2>
-            <p>
-              Contact us today to discuss your technology needs and solutions
-            </p>
+            <h2>{t("ctaTitle") || "Ready to Transform Your Business?"}</h2>
+            <p>{t("ctaDescription") || "Contact us today to discuss your technology needs and solutions"}</p>
             <Link href="/contact">
               <Button type="primary" size="large" className={styles.ctaButton}>
-                Contact Us
+                {t("contactUs") || "Contact Us"}
               </Button>
             </Link>
           </div>
