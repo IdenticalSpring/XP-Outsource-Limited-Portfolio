@@ -1,5 +1,7 @@
 // src/components/admin/FormModal.js
-import { Modal, Form, Input } from "antd";
+import { Modal, Form, Input, Select } from "antd";
+
+const { Option } = Select;
 
 export default function FormModal({
   visible,
@@ -15,12 +17,14 @@ export default function FormModal({
       <Form form={form} layout="vertical" initialValues={initialValues}>
         {fields.map((field) => (
           <Form.Item
-            key={field.name}
+            key={Array.isArray(field.name) ? field.name.join(".") : field.name}
             name={field.name}
             label={field.label}
             rules={field.rules}
           >
-            {field.type === "textarea" ? (
+            {field.render ? (
+              field.render()
+            ) : field.type === "textarea" ? (
               <Input.TextArea rows={4} placeholder={field.placeholder} />
             ) : (
               <Input placeholder={field.placeholder} />
