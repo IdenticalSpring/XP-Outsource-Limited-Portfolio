@@ -6,7 +6,7 @@
   width: 100%;
   z-index: 1000;
   transition: all 0.3s ease;
-  background-color: transparent;
+  background-color: transparent; /* Mặc định trong suốt */
 }
 
 .scrolled {
@@ -14,8 +14,14 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
+.notHomePage {
+  background-color: white; /* Nền trắng cho các trang không phải trang chủ */
+}
+
 .scrolled .logoText,
-.scrolled .menu :global(.ant-menu-item) a {
+.scrolled .menu :global(.ant-menu-item) a,
+.notHomePage .logoText,
+.notHomePage .menu :global(.ant-menu-item) a {
   color: #333 !important;
   transition: color 0.3s;
 }
@@ -25,7 +31,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 15px 40px;
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
@@ -42,7 +48,8 @@
   transition: color 0.3s;
 }
 
-.scrolled .logoText:hover {
+.scrolled .logoText:hover,
+.notHomePage .logoText:hover {
   color: #f15a22;
 }
 
@@ -57,7 +64,8 @@
   margin-right: 20px;
 }
 
-.scrolled .menu {
+.scrolled .menu,
+.notHomePage .menu {
   color: #333;
 }
 
@@ -71,16 +79,18 @@
   color: white !important;
   font-size: 1rem;
   font-weight: 500;
-  transition: color 0.3s;
+  transition: color 0.3s, transform 0.3s;
   padding: 5px 0;
 }
 
 .menu :global(.ant-menu-item-selected) a,
 .menu :global(.ant-menu-item:hover) a {
   color: #f15a22 !important;
+  transform: translateY(-2px);
 }
 
-.scrolled .menu :global(.ant-menu-item:hover) a {
+.scrolled .menu :global(.ant-menu-item:hover) a,
+.notHomePage .menu :global(.ant-menu-item:hover) a {
   color: #f15a22 !important;
 }
 
@@ -95,9 +105,16 @@
   color: white;
   margin-right: 15px;
   font-size: 1.2rem;
+  transition: color 0.3s, transform 0.3s;
 }
 
-.scrolled .searchButton {
+.searchButton:hover {
+  color: #f15a22;
+  transform: scale(1.1);
+}
+
+.scrolled .searchButton,
+.notHomePage .searchButton {
   color: #333;
 }
 
@@ -117,7 +134,6 @@
   box-shadow: 0 4px 10px rgba(241, 90, 34, 0.3);
 }
 
-/* Cải thiện style cho language dropdown */
 .languageDropdown {
   position: relative;
   margin-left: 15px;
@@ -142,7 +158,8 @@
   backdrop-filter: blur(5px);
 }
 
-.scrolled .dropdownTrigger {
+.scrolled .dropdownTrigger,
+.notHomePage .dropdownTrigger {
   background: rgba(255, 255, 255, 0.9);
   border: 1px solid rgba(0, 0, 0, 0.1);
   color: #333;
@@ -175,7 +192,8 @@
   transform: rotate(180deg);
 }
 
-.scrolled .dropdownArrow {
+.scrolled .dropdownArrow,
+.notHomePage .dropdownArrow {
   color: #333;
 }
 
@@ -249,7 +267,8 @@
   font-size: 1.5rem;
 }
 
-.scrolled .menuButton {
+.scrolled .menuButton,
+.notHomePage .menuButton {
   color: #333;
 }
 
@@ -272,7 +291,6 @@
   margin-top: 20px;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .headerContainer {
     padding: 15px 20px;
@@ -290,13 +308,13 @@
     width: 100%;
     margin-top: 20px;
   }
-  
+
   .mobileDrawer .dropdownTrigger {
     width: 100%;
     justify-content: center;
     background: rgba(241, 90, 34, 0.05);
   }
-  
+
   .mobileDrawer .dropdownMenu {
     width: 100%;
   }

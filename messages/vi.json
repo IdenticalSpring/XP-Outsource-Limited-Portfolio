@@ -22,5 +22,14 @@
   "partnersDescription": "Chúng tôi hợp tác với các nhà lãnh đạo ngành để mang lại các giải pháp vượt trội",
   "ctaTitle": "Sẵn sàng chuyển đổi doanh nghiệp của bạn?",
   "ctaDescription": "Liên hệ với chúng tôi hôm nay để thảo luận về nhu cầu và giải pháp công nghệ của bạn",
-  "contactUs": "Liên hệ với chúng tôi"
+  "contactUs": "Liên hệ với chúng tôi",
+  "blogSectionTitle": "Blog của chúng tôi",
+  "blogSectionDescription": "Khám phá những thông tin và cập nhật mới nhất về công nghệ và đổi mới",
+  "readMore": "Đọc thêm",
+  "noBlogsAvailable": "Hiện tại chưa có blog nào.",
+  "blogNotFound": "Không tìm thấy blog.",
+  "backToHome": "Quay lại trang chủ",
+  "backToBlogs": "Quay lại Blog", 
+  "backToTop": "Quay lại đầu trang",
+  "loading": "Đang tải..."
 }

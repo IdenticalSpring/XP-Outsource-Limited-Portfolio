@@ -486,3 +486,24 @@
     font-size: 2rem;
   }
 }
+.serviceCard img {
+  border-radius: 8px 8px 0 0;
+  width: 100%;
+  object-fit: cover;
+}
+
+.serviceCard h3 {
+  margin: 16px 0 8px;
+  font-size: 1.5rem;
+}
+
+.serviceCard p {
+  color: #666;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.learnMoreBtn {
+  padding: 0;
+  font-weight: 500;
+}

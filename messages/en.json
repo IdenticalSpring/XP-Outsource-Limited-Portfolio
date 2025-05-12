@@ -22,5 +22,14 @@
   "partnersDescription": "We collaborate with industry leaders to deliver exceptional solutions",
   "ctaTitle": "Ready to Transform Your Business?",
   "ctaDescription": "Contact us today to discuss your technology needs and solutions",
-  "contactUs": "Contact Us"
+  "contactUs": "Contact Us",
+  "blogSectionTitle": "Our Blogs",
+  "blogSectionDescription": "Discover our latest insights and updates on technology and innovation",
+  "readMore": "Read More",
+  "noBlogsAvailable": "No blogs available at the moment.",
+  "blogNotFound": "Blog not found.",
+  "backToHome": "Back to Home",
+  "backToBlogs": "Back to Blogs",
+  "backToTop": "Back to Top",
+  "loading": "Loading..."
 }

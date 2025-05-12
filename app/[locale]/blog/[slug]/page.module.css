@@ -1,0 +1,117 @@
+/* app/[locale]/blog/[slug]/page.module.css */
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f9f9f9;
+}
+
+.mainContent {
+  flex: 1;
+  padding: 80px 24px 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.ant-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.backToBlogsBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px; 
+  padding: 5px 8px;
+  border-radius: 14px; 
+  border: 1px solid #f15a22;
+  background-color: white;
+  color: #f15a22;
+  font-weight: 500;
+  font-size: 0.8rem;
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  text-decoration: none !important;
+  cursor: pointer;
+}
+
+a.backToBlogsBtn {
+  text-decoration: none !important;
+  font-size: 0.8rem; 
+}
+
+.backToBlogsBtn:hover {
+  background-color: #f15a22;
+  color: white;
+  transform: translateX(-2px);
+  box-shadow: 0 3px 8px rgba(241, 90, 34, 0.25);
+}
+
+.backToTop {
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  background-color: #f15a22 !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 50% !important;
+  width: 50px !important;
+  height: 50px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease, opacity 0.3s ease;
+  opacity: 0;
+  animation: fadeIn 0.3s forwards;
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+.backToTop :global(.anticon) {
+  font-size: 20px !important;
+  display: block !important;
+  line-height: 1 !important;
+  margin: 0 !important;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 0.8;
+  }
+}
+
+.backToTop:hover {
+  background-color: #d84a14;
+  transform: translateY(-3px);
+  box-shadow: 0 4px 15px rgba(241, 90, 34, 0.3);
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .mainContent {
+    padding: 70px 16px 30px;
+  }
+
+  .backToBlogsBtn {
+    padding: 4px 6px;
+    font-size: 0.75rem; 
+  }
+
+  .backToTop {
+    bottom: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+  }
+
+  .backToTop :global(.anticon) {
+    font-size: 16px;
+  }
+}
+
+.linkWrapper a {
+  text-decoration: none !important;
+}

@@ -1,4 +1,3 @@
-// src/lib/api.js
 export async function fetchBanners(locale) {
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/banner`, {

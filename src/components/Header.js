@@ -19,14 +19,13 @@ export default function Header() {
   const t = useTranslations();
   const locale = useLocale();
 
+  // Kiểm tra xem có phải trang chủ không
+  const isHomePage = pathname === `/${locale}`;
+
   useEffect(() => {
     const handleScroll = () => {
       const offset = window.scrollY;
-      if (offset > 50) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
+      setScrolled(offset > 50);
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -64,7 +63,7 @@ export default function Header() {
   const menuItems = menuConfig.map((item) => ({
     key: item.key,
     label:
-      pathname === `/${locale}` ? (
+      pathname === `/${locale}` || pathname.includes(`/${locale}/blog/`) ? (
         <a
           href={item.href}
           onClick={(e) => {
@@ -85,7 +84,11 @@ export default function Header() {
   }));
 
   return (
-    <div className={`${styles.header} ${scrolled ? styles.scrolled : ""}`}>
+    <div
+      className={`${styles.header} ${scrolled ? styles.scrolled : ""} ${
+        !isHomePage ? styles.notHomePage : ""
+      }`}
+    >
       <div className={styles.headerContainer}>
         <div className={styles.logo}>
           <Link href={`/${locale}`}>
@@ -101,7 +104,7 @@ export default function Header() {
               type="primary"
               className={styles.contactButton}
               onClick={() =>
-                pathname === `/${locale}`
+                pathname === `/${locale}` || pathname.includes(`/${locale}/blog/`)
                   ? handleScrollTo("contact")
                   : (window.location.href = `/${locale}/contact`)
               }
@@ -109,7 +112,6 @@ export default function Header() {
               {t("getStarted")}
             </Button>
 
-            {/* Cải thiện language dropdown */}
             <div className={styles.languageDropdown}>
               <div
                 className={`${styles.dropdownTrigger} ${dropdownOpen ? styles.dropdownOpen : ""}`}
@@ -163,7 +165,7 @@ export default function Header() {
           block
           className={styles.drawerContactBtn}
           onClick={() =>
-            pathname === `/${locale}`
+            pathname === `/${locale}` || pathname.includes(`/${locale}/blog/`)
               ? handleScrollTo("contact")
               : (window.location.href = `/${locale}/contact`)
           }
@@ -171,7 +173,6 @@ export default function Header() {
           {t("getStarted")}
         </Button>
 
-        {/* Cải thiện mobile language dropdown */}
         <div className={styles.languageDropdown}>
           <div
             className={`${styles.dropdownTrigger} ${dropdownOpen ? styles.dropdownOpen : ""}`}
