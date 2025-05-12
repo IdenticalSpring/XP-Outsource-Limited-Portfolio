@@ -1,9 +1,8 @@
 // app/[locale]/page.js
 "use client";
-import { Button, Card, Col, Row } from "antd";
+import { Button, Col, Row } from "antd";
 import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import styles from "./page.module.css";
 import {
   FaLaptopCode,
   FaDatabase,
@@ -12,41 +11,14 @@ import {
 import Header from "../../src/components/Header";
 import Footer from "../../src/components/Footer";
 import BannerCarousel from "../../src/components/Banner";
+import BlogList from "../../src/components/blog/BlogList";
 import Link from "next/link";
 import { about } from "../../src/data/data";
-import { useEffect, useState } from "react";
+import styles from "./page.module.css";
 
 export default function Home() {
   const { locale } = useParams();
   const t = useTranslations();
-  const [blogs, setBlogs] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  // API endpoint từ backend
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
-
-  // Lấy danh sách blog từ API
-  useEffect(() => {
-    const fetchBlogs = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(`${API_URL}/blog?page=1&limit=6`, {
-          headers: {
-            "Accept-Language": locale, // Gửi locale để backend lọc theo ngôn ngữ
-          },
-        });
-        if (!response.ok) throw new Error("Failed to fetch blogs");
-        const data = await response.json();
-        setBlogs(data.blogs || []);
-      } catch (error) {
-        console.error("Error fetching blogs:", error);
-        setBlogs([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchBlogs();
-  }, [locale]);
 
   const techPartners = [
     { name: "Microsoft", logo: "/images/microsoft.png" },
@@ -67,76 +39,8 @@ export default function Home() {
     <div className={styles.container}>
       <Header />
       <BannerCarousel locale={locale} />
-
-      {/* Blog Section */}
-      <section id="blogs" className={styles.servicesSection}>
-        <div className={styles.sectionContainer}>
-          <div className={styles.sectionHeader}>
-            <h2>{t("blogSectionTitle") || "Our Blogs"}</h2>
-            <p>
-              {t("blogSectionDescription") ||
-                "Discover our latest insights and updates on technology and innovation"}
-            </p>
-          </div>
-
-          {loading ? (
-            <p>Loading blogs...</p>
-          ) : blogs.length === 0 ? (
-            <p>{t("noBlogsAvailable") || "No blogs available at the moment."}</p>
-          ) : (
-            <Row gutter={[32, 32]}>
-              {blogs
-                .filter((blog) => {
-                  // Lọc các blog có translations hợp lệ
-                  return blog.translations && blog.translations.length > 0;
-                })
-                .map((blog) => {
-                  const translation = blog.translations.find(
-                    (t) => t.language === locale
-                  ) || blog.translations[0];
-                  
-                  // Kiểm tra translation có hợp lệ không
-                  if (!translation || !translation.title) {
-                    console.warn(`Blog ${blog.id} thiếu bản dịch hợp lệ cho locale ${locale}`);
-                    return null;
-                  }
-
-                  return (
-                    <Col xs={24} sm={12} md={8} key={blog.id}>
-                      <Card
-                        className={styles.serviceCard}
-                        variant="borderless"
-                        cover={
-                          blog.image && (
-                            <img
-                              src={blog.image}
-                              alt={blog.altText || translation.title}
-                              style={{ height: 200, objectFit: "cover" }}
-                            />
-                          )
-                        }
-                      >
-                        <h3>{translation.title}</h3>
-                        <p>
-                          {translation.metaDescription ||
-                            (translation.content
-                              ? translation.content.slice(0, 100) + "..."
-                              : t("noDescription") || "No description available.")}
-                        </p>
-                        <Link href={`/${locale}/blog/${blog.slug}`}>
-                          <Button type="link" className={styles.learnMoreBtn}>
-                            {t("readMore") || "Read More"}
-                          </Button>
-                        </Link>
-                      </Card>
-                    </Col>
-                  );
-                })}
-            </Row>
-          )}
-        </div>
-      </section>
-
+      <BlogList locale={locale} />
+      
       {/* Các section còn lại giữ nguyên */}
       <section id="about" className={styles.aboutSection}>
         <div className={styles.sectionContainer}>
