@@ -1,24 +1,26 @@
+// src/pages/admin/login/page.js
 "use client";
 
 import { Button, Form, Input, message, Typography, Divider } from "antd";
 import { useRouter } from "next/navigation";
-import { useLocale } from "next-intl"; // Thêm useLocale
+import { useLocale } from "next-intl";
 import { useEffect, useState } from "react";
 import styles from "./page.module.css";
 import { UserOutlined, LockOutlined, LoginOutlined } from "@ant-design/icons";
+import { loginAdmin } from "@/src/lib/api";
 
 const { Title, Text } = Typography;
 
 export default function AdminLogin() {
   const router = useRouter();
-  const locale = useLocale(); // Lấy locale hiện tại (en hoặc vi)
+  const locale = useLocale();
   const [loading, setLoading] = useState(false);
 
   // Check if already logged in
   useEffect(() => {
-    const token = localStorage.getItem("adminToken");
+    const token = sessionStorage.getItem("adminToken");
     if (token) {
-      router.push(`/${locale}/admin/dashboard`); // Thêm locale vào URL
+      router.push(`/${locale}/admin/dashboard`);
     }
   }, [router, locale]);
 
@@ -26,15 +28,14 @@ export default function AdminLogin() {
     setLoading(true);
     try {
       const { username, password } = values;
-      if (username === "admin" && password === "admin") {
-        localStorage.setItem("adminToken", "xp-admin-token");
-        message.success("Đăng nhập thành công");
-        router.push(`/${locale}/admin/dashboard`); // Thêm locale vào URL
-      } else {
-        message.error("Tên đăng nhập hoặc mật khẩu không đúng");
-      }
+      // Gọi API login
+      const response = await loginAdmin(locale, { username, password });
+      // Lưu token vào localStorage
+      sessionStorage.setItem("adminToken", response.accessToken);
+      message.success("Đăng nhập thành công");
+      router.push(`/${locale}/admin/dashboard`);
     } catch (error) {
-      message.error("Đã xảy ra lỗi. Vui lòng thử lại.");
+      message.error("Tên đăng nhập hoặc mật khẩu không đúng");
     } finally {
       setLoading(false);
     }

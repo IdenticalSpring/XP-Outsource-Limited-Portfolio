@@ -1,23 +1,4 @@
-/* src/pages/admin/dashboard/page.module.css */
-.container {
-  max-width: 1200px;
-  margin: 20px auto;
-  padding: 0 20px;
-}
-
-.tableHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.tableHeader h2 {
-  font-size: 1.8rem;
-  color: #003087;
-  margin: 0;
-}
-
+/* src/components/admin/LayoutAdmin.module.css */
 .header {
   background: #fff;
   padding: 0 24px;
