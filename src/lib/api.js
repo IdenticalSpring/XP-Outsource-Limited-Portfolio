@@ -33,7 +33,10 @@ export const fetchBanners = async (locale) => {
 
 export const fetchBlog = async (locale, slug) => {
   try {
-    const data = await fetchWithLocale(`${API_URL}/${locale}/blog/${slug}`, locale);
+    const data = await fetchWithLocale(
+      `${API_URL}/${locale}/blog/${slug}`,
+      locale
+    );
     return data;
   } catch (error) {
     console.warn(`Failed to fetch blog: ${slug}, returning null`);
