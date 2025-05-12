@@ -2,112 +2,6 @@
   overflow-x: hidden;
 }
 
-/* Hero Section */
-.heroSection {
-  position: relative;
-  height: 100vh;
-  min-height: 600px;
-}
-
-.carousel {
-  height: 100%;
-}
-
-.heroSlide {
-  height: 100vh;
-  min-height: 600px;
-  background-size: cover;
-  background-position: center;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.heroSlide::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(
-    to right,
-    rgba(0, 0, 0, 0.7) 0%,
-    rgba(0, 0, 0, 0.4) 50%,
-    rgba(0, 0, 0, 0.2) 100%
-  );
-}
-
-.heroContent {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 0 20px;
-  position: relative;
-  z-index: 10;
-  text-align: center;
-  margin-top: 80px; /* Account for header */
-}
-
-.heroContent h1 {
-  font-size: 3.5rem;
-  font-weight: 700;
-  color: white;
-  margin-bottom: 20px;
-  line-height: 1.2;
-}
-
-.heroContent p {
-  font-size: 1.5rem;
-  color: white;
-  margin-bottom: 30px;
-  opacity: 0.9;
-}
-
-.heroButton {
-  height: 50px;
-  padding: 0 30px;
-  font-size: 1.1rem;
-  background: #f15a22;
-  border: none;
-  border-radius: 4px;
-  transition: all 0.3s;
-}
-
-.heroButton:hover {
-  background: #d84a14;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 15px rgba(241, 90, 34, 0.3);
-}
-
-.carouselNavigation {
-  position: absolute;
-  bottom: 60px;
-  right: 60px;
-  display: flex;
-  gap: 10px;
-  z-index: 100;
-}
-
-.navButton {
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid rgba(255, 255, 255, 0.5);
-  background: transparent;
-  color: white;
-  border-radius: 50%;
-  transition: all 0.3s;
-}
-
-.navButton:hover {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: white;
-  color: white;
-}
-
 /* Common Section Styles */
 .sectionContainer {
   max-width: 1200px;
@@ -363,19 +257,41 @@
 /* CTA Section */
 .ctaSection {
   padding: 100px 0;
-  background: linear-gradient(
-    to right,
-    rgba(0, 0, 0, 0.7) 0%,
-    rgba(0, 0, 0, 0.4) 50%,
-    rgba(0, 0, 0, 0.2) 100%
-  );
   color: white;
   text-align: center;
+  min-height: 300px;
+  position: relative;
+}
+
+.ctaBackground {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: blur(10px); /* Làm mờ hình nền */
+  z-index: 0;
+}
+
+.ctaSection::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8); /* Overlay đen đậm */
+  z-index: 1;
 }
 
 .ctaContent {
   max-width: 700px;
   margin: 0 auto;
+  position: relative;
+  z-index: 2;
 }
 
 .ctaContent h2 {
@@ -409,14 +325,6 @@
 
 /* Responsive */
 @media (max-width: 992px) {
-  .heroContent h1 {
-    font-size: 3rem;
-  }
-
-  .heroContent p {
-    font-size: 1.3rem;
-  }
-
   .sectionHeader h2,
   .aboutContent h2,
   .ctaContent h2 {
@@ -425,24 +333,6 @@
 }
 
 @media (max-width: 768px) {
-  .heroSection,
-  .heroSlide {
-    height: 80vh;
-  }
-
-  .heroContent h1 {
-    font-size: 2.5rem;
-  }
-
-  .heroContent p {
-    font-size: 1.1rem;
-  }
-
-  .carouselNavigation {
-    bottom: 30px;
-    right: 30px;
-  }
-
   .servicesSection,
   .aboutSection,
   .ctaSection {
@@ -465,45 +355,19 @@
 }
 
 @media (max-width: 576px) {
-  .heroContent h1 {
-    font-size: 2rem;
-  }
-
-  .heroButton,
-  .ctaButton {
-    height: 45px;
-    padding: 0 20px;
-    font-size: 1rem;
-  }
-
   .sectionHeader h2,
   .aboutContent h2,
   .ctaContent h2 {
     font-size: 1.8rem;
   }
 
+  .ctaButton {
+    height: 45px;
+    padding: 0 20px;
+    font-size: 1rem;
+  }
+
   .achievementItem h3 {
     font-size: 2rem;
   }
-}
-.serviceCard img {
-  border-radius: 8px 8px 0 0;
-  width: 100%;
-  object-fit: cover;
-}
-
-.serviceCard h3 {
-  margin: 16px 0 8px;
-  font-size: 1.5rem;
-}
-
-.serviceCard p {
-  color: #666;
-  margin-bottom: 16px;
-  line-height: 1.5;
-}
-
-.learnMoreBtn {
-  padding: 0;
-  font-weight: 500;
 }

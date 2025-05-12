@@ -1,13 +1,8 @@
-// app/[locale]/page.js
 "use client";
 import { Button, Col, Row } from "antd";
 import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import {
-  FaLaptopCode,
-  FaDatabase,
-  FaProjectDiagram,
-} from "react-icons/fa";
+import { FaLaptopCode, FaDatabase, FaProjectDiagram } from "react-icons/fa";
 import Header from "../../src/components/Header";
 import Footer from "../../src/components/Footer";
 import BannerCarousel from "../../src/components/Banner";
@@ -15,10 +10,30 @@ import BlogList from "../../src/components/blog/BlogList";
 import Link from "next/link";
 import { about } from "../../src/data/data";
 import styles from "./page.module.css";
+import { useState, useEffect } from "react";
+import { fetchBanners } from "../../src/lib/api";
 
 export default function Home() {
   const { locale } = useParams();
   const t = useTranslations();
+  const [banners, setBanners] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadBanners = async () => {
+      setIsLoading(true);
+      const fetchedBanners = await fetchBanners(locale);
+      console.log("Fetched banners:", fetchedBanners);
+      setBanners(fetchedBanners);
+      setIsLoading(false);
+    };
+    loadBanners();
+  }, [locale]);
+
+  const mainBanners = banners.filter((banner) => banner.slug !== "contact-cta-banner");
+  const contactBanner = banners.find((banner) => banner.slug === "contact-cta-banner");
+  console.log("Main banners:", mainBanners);
+  console.log("Contact banner:", contactBanner);
 
   const techPartners = [
     { name: "Microsoft", logo: "/images/microsoft.png" },
@@ -35,13 +50,35 @@ export default function Home() {
     { number: "100+", text: "Expert Developers" },
   ];
 
+  const getTranslation = (banner) => {
+    if (!banner || !banner.translations || banner.translations.length === 0) {
+      console.warn("Invalid banner or translations:", banner);
+      return {
+        title: "Error: No translation available",
+        description: "Please check banner data",
+        buttonText: "Contact Us",
+        buttonLink: "/contact",
+      };
+    }
+    const translation = banner.translations.find((t) => t.language === locale) || banner.translations[0];
+    console.log("Selected translation for locale", locale, ":", translation);
+    return translation;
+  };
+
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return "";
+    if (imagePath.startsWith("http")) return imagePath;
+    const url = `${process.env.NEXT_PUBLIC_API_URL}${imagePath}`;
+    console.log("Generated image URL:", url);
+    return url;
+  };
+
   return (
     <div className={styles.container}>
       <Header />
-      <BannerCarousel locale={locale} />
+      <BannerCarousel locale={locale} banners={mainBanners} isLoading={isLoading} />
       <BlogList locale={locale} />
-      
-      {/* Các section còn lại giữ nguyên */}
+
       <section id="about" className={styles.aboutSection}>
         <div className={styles.sectionContainer}>
           <Row gutter={[48, 48]} align="middle">
@@ -138,18 +175,40 @@ export default function Home() {
       </section>
 
       <section id="contact" className={styles.ctaSection}>
+        {contactBanner && !isLoading && (
+          <div
+            className={styles.ctaBackground}
+            style={{ backgroundImage: `url(${getImageUrl(contactBanner.image)})` }}
+          />
+        )}
         <div className={styles.sectionContainer}>
           <div className={styles.ctaContent}>
-            <h2>{t("ctaTitle") || "Ready to Transform Your Business?"}</h2>
-            <p>
-              {t("ctaDescription") ||
-                "Contact us today to discuss your technology needs and solutions"}
-            </p>
-            <Link href="/contact">
-              <Button type="primary" size="large" className={styles.ctaButton}>
-                {t("contactUs") || "Contact Us"}
-              </Button>
-            </Link>
+            {isLoading ? (
+              <div>
+                <h2>Loading banner...</h2>
+                <p>Please wait while we fetch the data.</p>
+              </div>
+            ) : contactBanner ? (
+              (() => {
+                const translation = getTranslation(contactBanner);
+                return (
+                  <>
+                    <h2>{translation.title}</h2>
+                    <p>{translation.description}</p>
+                    <Link href={translation.buttonLink}>
+                      <Button type="primary" size="large" className={styles.ctaButton}>
+                        {translation.buttonText}
+                      </Button>
+                    </Link>
+                  </>
+                );
+              })()
+            ) : (
+              <div>
+                <h2>Error: Contact banner not found</h2>
+                <p>Please ensure a banner with slug "contact-cta-banner" exists in the database.</p>
+              </div>
+            )}
           </div>
         </div>
       </section>

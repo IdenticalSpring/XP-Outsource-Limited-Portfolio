@@ -1,40 +1,15 @@
-// src/components/BannerCarousel.js
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useRef } from "react";
 import { Carousel, Spin, Button } from "antd";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { fetchBanners } from "../lib/api";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import styles from "./Banner.module.css";
 
-export default function Banner({ locale }) {
+export default function BannerCarousel({ locale, banners, isLoading }) {
   const carouselRef = useRef(null);
   const t = useTranslations();
   const finalLocale = locale || "en";
-  const [banners, setBanners] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    async function loadBanners() {
-      try {
-        setLoading(true);
-        setError(null);
-        const data = await fetchBanners(finalLocale);
-        if (!Array.isArray(data)) {
-          throw new Error("Invalid data format: Expected an array");
-        }
-        setBanners(data);
-      } catch (err) {
-        setError(t("failedToLoadBanners") || "Failed to load banners. Please try again later.");
-        console.error("Error in loadBanners:", err);
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadBanners();
-  }, [finalLocale]);
 
   const getTranslation = (banner) => {
     if (!banner || !banner.translations || !Array.isArray(banner.translations)) {
@@ -55,11 +30,9 @@ export default function Banner({ locale }) {
 
   return (
     <section id="home" className={styles.heroSection}>
-      {loading ? (
+      {isLoading ? (
         <Spin size="large" style={{ display: "block", margin: "0 auto" }} />
-      ) : error ? (
-        <div style={{ textAlign: "center", color: "red" }}>{error}</div>
-      ) : banners.length === 0 ? (
+      ) : !banners || banners.length === 0 ? (
         <div style={{ textAlign: "center" }}>{t("noBanners") || "No banners available"}</div>
       ) : (
         <Carousel
@@ -103,13 +76,13 @@ export default function Banner({ locale }) {
           className={styles.navButton}
           onClick={() => carouselRef.current?.prev()}
           icon={<FaChevronLeft />}
-          disabled={loading || banners.length === 0}
+          disabled={isLoading || !banners || banners.length === 0}
         />
         <Button
           className={styles.navButton}
           onClick={() => carouselRef.current?.next()}
           icon={<FaChevronRight />}
-          disabled={loading || banners.length === 0}
+          disabled={isLoading || !banners || banners.length === 0}
         />
       </div>
     </section>
