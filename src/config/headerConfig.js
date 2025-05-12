@@ -16,11 +16,11 @@ export const menuConfig = [
     translationKey: "home",
     link: "/",
   },
-  {
-    key: "services",
-    href: "#services",
-    translationKey: "services",
-    link: "/services",
+{
+    key: "blog", 
+    href: "#blog", 
+    translationKey: "blog",
+    link: "/blog",
   },
   {
     key: "about",

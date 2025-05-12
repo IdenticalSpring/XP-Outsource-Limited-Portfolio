@@ -22,7 +22,7 @@ export default function BlogList({ locale }) {
   }, [locale]);
 
   return (
-    <section id="blogs" className={styles.servicesSection}>
+    <section id="blog" className={styles.servicesSection}>
       <div className={styles.sectionContainer}>
         <div className={styles.sectionHeader}>
           <h2>{t("blogSectionTitle") || "Our Blogs"}</h2>

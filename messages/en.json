@@ -1,6 +1,6 @@
 {
   "home": "Home",
-  "services": "Services",
+  "blog":"Blog",
   "about": "About Us",
   "contact": "Contact",
   "getStarted": "Get Started",
@@ -32,4 +32,5 @@
   "backToBlogs": "Back to Blogs",
   "backToTop": "Back to Top",
   "loading": "Loading..."
+  
 }
