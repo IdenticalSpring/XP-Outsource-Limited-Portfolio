@@ -3,7 +3,6 @@ import { useRef } from "react";
 import { Carousel, Spin, Button } from "antd";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import styles from "./Banner.module.css";
 
 export default function BannerCarousel({ locale, banners, isLoading }) {
@@ -12,13 +11,26 @@ export default function BannerCarousel({ locale, banners, isLoading }) {
   const finalLocale = locale || "en";
 
   const getTranslation = (banner) => {
-    if (!banner || !banner.translations || !Array.isArray(banner.translations)) {
-      return { title: "No Title", description: "No Description", buttonText: "Learn More", buttonLink: "#" };
+    if (
+      !banner ||
+      !banner.translations ||
+      !Array.isArray(banner.translations)
+    ) {
+      return {
+        title: "No Title",
+        description: "No Description",
+        buttonText: "Learn More",
+        buttonLink: "#",
+      };
     }
     return (
       banner.translations.find((trans) => trans.language === finalLocale) ||
-      banner.translations[0] ||
-      { title: "No Title", description: "No Description", buttonText: "Learn More", buttonLink: "#" }
+      banner.translations[0] || {
+        title: "No Title",
+        description: "No Description",
+        buttonText: "Learn More",
+        buttonLink: "#",
+      }
     );
   };
 
@@ -33,10 +45,13 @@ export default function BannerCarousel({ locale, banners, isLoading }) {
       {isLoading ? (
         <Spin size="large" style={{ display: "block", margin: "0 auto" }} />
       ) : !banners || banners.length === 0 ? (
-        <div style={{ textAlign: "center" }}>{t("noBanners") || "No banners available"}</div>
+        <div style={{ textAlign: "center" }}>
+          {t("noBanners") || "No banners available"}
+        </div>
       ) : (
         <Carousel
           autoplay
+          autoplaySpeed={5000} // Set to 10 seconds (10,000 milliseconds)
           effect="fade"
           dots={true}
           ref={carouselRef}
@@ -70,21 +85,6 @@ export default function BannerCarousel({ locale, banners, isLoading }) {
           })}
         </Carousel>
       )}
-
-      <div className={styles.carouselNavigation}>
-        <Button
-          className={styles.navButton}
-          onClick={() => carouselRef.current?.prev()}
-          icon={<FaChevronLeft />}
-          disabled={isLoading || !banners || banners.length === 0}
-        />
-        <Button
-          className={styles.navButton}
-          onClick={() => carouselRef.current?.next()}
-          icon={<FaChevronRight />}
-          disabled={isLoading || !banners || banners.length === 0}
-        />
-      </div>
     </section>
   );
 }
