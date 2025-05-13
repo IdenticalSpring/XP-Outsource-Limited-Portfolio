@@ -1,0 +1,35 @@
+/* src/components/admin/BlogsManagement.module.css */
+.container {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 0 20px;
+}
+
+.tableHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.tableHeader h2 {
+  font-size: 1.8rem;
+  color: var(--primary-color, #003087);
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 10px;
+  }
+
+  .tableHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .tableHeader h2 {
+    font-size: 1.5rem;
+  }
+}

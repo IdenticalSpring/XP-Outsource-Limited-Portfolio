@@ -142,3 +142,40 @@ export const deleteBanner = async (locale, id) => {
     throw new Error("Failed to delete banner");
   }
 };
+
+// BLOG
+export const createBlog = async (locale, blogData) => {
+  try {
+    const data = await fetchWithLocale(`${API_URL}/blog`, locale, {
+      method: "POST",
+      body: JSON.stringify(blogData),
+    });
+    return data.blog || data; // Return data.blog or entire data if structure differs
+  } catch (error) {
+    console.error("Error creating blog:", error);
+    throw new Error("Failed to create blog");
+  }
+};
+// Cập nhật BLOG
+export const updateBlog = async (locale, id, blogData) => {
+  try {
+    const data = await fetchWithLocale(`${API_URL}/blog/${id}`, locale, {
+      method: "PUT",
+      body: JSON.stringify(blogData),
+    });
+    return data; // Trả về banner đã cập nhật
+  } catch (error) {
+    throw new Error("Failed to update banner");
+  }
+};
+
+// Xóa BLOG
+export const deleteBlog = async (locale, id) => {
+  try {
+    await fetchWithLocale(`${API_URL}/blog/${id}`, locale, {
+      method: "DELETE",
+    });
+  } catch (error) {
+    throw new Error("Failed to delete banner");
+  }
+};
