@@ -30,8 +30,12 @@ export default function Home() {
     loadBanners();
   }, [locale]);
 
-  const mainBanners = banners.filter((banner) => banner.slug !== "contact-cta-banner");
-  const contactBanner = banners.find((banner) => banner.slug === "contact-cta-banner");
+  const mainBanners = banners.filter(
+    (banner) => banner.slug !== "contact-cta-banner"
+  );
+  const contactBanner = banners.find(
+    (banner) => banner.slug === "contact-cta-banner"
+  );
   console.log("Main banners:", mainBanners);
   console.log("Contact banner:", contactBanner);
 
@@ -60,7 +64,9 @@ export default function Home() {
         buttonLink: "/contact",
       };
     }
-    const translation = banner.translations.find((t) => t.language === locale) || banner.translations[0];
+    const translation =
+      banner.translations.find((t) => t.language === locale) ||
+      banner.translations[0];
     console.log("Selected translation for locale", locale, ":", translation);
     return translation;
   };
@@ -76,7 +82,11 @@ export default function Home() {
   return (
     <div className={styles.container}>
       <Header />
-      <BannerCarousel locale={locale} banners={mainBanners} isLoading={isLoading} />
+      <BannerCarousel
+        locale={locale}
+        banners={mainBanners}
+        isLoading={isLoading}
+      />
       <BlogList locale={locale} />
 
       <section id="about" className={styles.aboutSection}>
@@ -178,7 +188,9 @@ export default function Home() {
         {contactBanner && !isLoading && (
           <div
             className={styles.ctaBackground}
-            style={{ backgroundImage: `url(${getImageUrl(contactBanner.image)})` }}
+            style={{
+              backgroundImage: `url(${getImageUrl(contactBanner.image)})`,
+            }}
           />
         )}
         <div className={styles.sectionContainer}>
@@ -196,7 +208,11 @@ export default function Home() {
                     <h2>{translation.title}</h2>
                     <p>{translation.description}</p>
                     <Link href={translation.buttonLink}>
-                      <Button type="primary" size="large" className={styles.ctaButton}>
+                      <Button
+                        type="primary"
+                        size="large"
+                        className={styles.ctaButton}
+                      >
                         {translation.buttonText}
                       </Button>
                     </Link>
@@ -206,7 +222,10 @@ export default function Home() {
             ) : (
               <div>
                 <h2>Error: Contact banner not found</h2>
-                <p>Please ensure a banner with slug "contact-cta-banner" exists in the database.</p>
+                <p>
+                  Please ensure a banner with slug "contact-cta-banner" exists
+                  in the database.
+                </p>
               </div>
             )}
           </div>

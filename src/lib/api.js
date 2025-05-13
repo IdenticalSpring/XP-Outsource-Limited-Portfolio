@@ -17,9 +17,20 @@ const fetchWithLocale = async (url, locale, options = {}) => {
       },
       cache: options.cache || "no-store",
     });
+
     if (!response.ok) {
       throw new Error(`HTTP error: ${response.status} ${response.statusText}`);
     }
+
+    // Handle 204 No Content or empty response
+    if (
+      response.status === 204 ||
+      response.headers.get("content-length") === "0"
+    ) {
+      return {}; // Return empty object for no-content responses
+    }
+
+    // Attempt to parse JSON for other responses
     return await response.json();
   } catch (error) {
     console.error(`API error: ${url}`, error);

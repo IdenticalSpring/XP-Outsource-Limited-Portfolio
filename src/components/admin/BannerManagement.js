@@ -16,6 +16,15 @@ import {
 
 const { Option } = Select;
 
+// Hàm xử lý đường dẫn ảnh
+const getImageUrl = (imagePath) => {
+  if (!imagePath) return "";
+  if (imagePath.startsWith("http")) return imagePath;
+  const url = `${process.env.NEXT_PUBLIC_API_URL}${imagePath}`;
+  console.log("Generated image URL:", url);
+  return url;
+};
+
 export default function BannerManagement() {
   const locale = useLocale();
   const [form] = Form.useForm();
@@ -58,7 +67,14 @@ export default function BannerManagement() {
       key: "image",
       render: (text) =>
         text ? (
-          <img src={text} alt="Banner" style={{ width: 50, height: "auto" }} />
+          <img
+            src={getImageUrl(text)}
+            alt="Banner"
+            style={{ width: 50, height: "auto" }}
+            onError={(e) => {
+              e.target.src = "/fallback-image.jpg"; // Hiển thị ảnh dự phòng nếu lỗi
+            }}
+          />
         ) : (
           "No image"
         ),
