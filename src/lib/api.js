@@ -94,6 +94,30 @@ export const fetchBlogs = async (locale, page = 1, limit = 3) => {
     return { data: [], total: 0 };
   }
 };
+export const fetchMembers = async (locale, page = 1, limit = 3) => {
+  try {
+    const response = await fetchWithLocale(
+      `${API_URL}/member?page=${page}&limit=${limit}`,
+      locale
+    );
+    return {
+      data: response || [],
+      total: response.total || 0, 
+    };
+  } catch (error) {
+    console.warn(`Failed to fetch members, returning empty array`);
+    return { data: [], total: 0 };
+  }
+};
+export const fetchMemberBySlug = async (locale, slug) => {
+  try {
+    const data = await fetchWithLocale(`${API_URL}/member/${locale}/${slug}`, locale);
+    return data || null;
+  } catch (error) {
+    console.warn(`Failed to fetch member: ${slug}, returning null`);
+    throw error;
+  }
+};
 // Hàm login admin
 export const loginAdmin = async (locale, credentials) => {
   try {

@@ -1,0 +1,74 @@
+/* app/member/[slug]/MemberDetail.module.css */
+.memberDetailSection {
+  padding: 100px 0;
+  background-color: #f9f9f9;
+}
+
+.sectionContainer {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.memberCard {
+  text-align: center;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  padding: 20px;
+}
+
+.memberCard h2 {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.memberCard p {
+  font-size: 1rem;
+  color: #666;
+  line-height: 1.6;
+}
+
+.backButton {
+  color: #f15a22;
+  font-weight: 500;
+  margin-top: 20px;
+}
+
+.backButton:hover {
+  color: #d84a14;
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.error {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.error h3 {
+  color: #ff4d4f;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .memberDetailSection {
+    padding: 60px 0;
+  }
+
+  .memberCard h2 {
+    font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .memberCard h2 {
+    font-size: 1.5rem;
+  }
+}

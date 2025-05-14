@@ -96,28 +96,27 @@ export default function Header() {
     }
   };
 
-  const menuItems = menuConfig.map((item) => ({
-    key: item.key,
-    label: (
-      <Link
-        href={item.link.replace("[locale]", locale)}
-        onClick={(e) => {
-          // Nếu đang ở trang chủ và mục là section (about, blog, contact), cuộn thay vì chuyển hướng
-          if (isHomePage && (item.key === "about" || item.key === "blog" || item.key === "contact")) {
-            e.preventDefault();
-            handleScrollTo(item.key);
-          } else if (!isHomePage && (item.key === "about" || item.key === "blog" || item.key === "contact")) {
-            // Nếu ở trang khác, chuyển về trang chủ với section
-            e.preventDefault();
-            handleScrollTo(item.key);
-          }
-          setVisible(false);
-        }}
-      >
-        {t(item.translationKey)}
-      </Link>
-    ),
-  }));
+// Trong Header.js
+const menuItems = menuConfig.map((item) => ({
+  key: item.key,
+  label: (
+    <Link
+      href={item.link.replace("[locale]", locale)}
+      onClick={(e) => {
+        if (isHomePage && ["about", "blog", "members", "contact"].includes(item.key)) {
+          e.preventDefault();
+          handleScrollTo(item.key);
+        } else if (!isHomePage && ["about", "blog", "members", "contact"].includes(item.key)) {
+          e.preventDefault();
+          handleScrollTo(item.key);
+        }
+        setVisible(false);
+      }}
+    >
+      {t(item.translationKey)}
+    </Link>
+  ),
+}));
 
   return (
     <div

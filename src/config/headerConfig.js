@@ -1,38 +1,13 @@
+// src/config/headerConfig.js
+export const languages = {
+  en: { name: "English", flag: "🇺🇸" },
+  vi: { name: "Tiếng Việt", flag: "🇻🇳" },
+};
 
 export const menuConfig = [
-  {
-    key: "home",
-    href: "#home", 
-    link: "/[locale]", 
-    translationKey: "home",
-  },
-  {
-    key: "about",
-    href: "#about",
-    link: "/[locale]#about",
-    translationKey: "about",
-  },
-  {
-    key: "contact",
-    href: "#contact",
-    link: "/[locale]/contact",
-    translationKey: "contact",
-  },
-  {
-    key: "blog",
-    href: "/[locale]/blog",
-    link: "/[locale]/blog",
-    translationKey: "blog",
-  },
+  { key: "home", link: "/[locale]", translationKey: "menu.home" },
+  { key: "about", link: "/[locale]#about", translationKey: "menu.about" },
+  { key: "blog", link: "/[locale]#blog", translationKey: "menu.blog" },
+  { key: "members", link: "/[locale]#members", translationKey: "menu.members" },
+  { key: "contact", link: "/[locale]#contact", translationKey: "menu.contact" },
 ];
-
-export const languages = {
-  en: {
-    name: "English",
-    flag: "🇬🇧",
-  },
-  vi: {
-    name: "Vietnamese",
-    flag: "🇻🇳",
-  },
-};

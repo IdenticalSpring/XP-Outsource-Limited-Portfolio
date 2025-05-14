@@ -1,0 +1,191 @@
+/* src/components/member/MemberList.module.css */
+.membersSection {
+  padding: 100px 0;
+  background-color: #f9f9f9;
+}
+
+.sectionContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.sectionHeader {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.sectionHeader h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 15px;
+  position: relative;
+  display: inline-block;
+}
+
+.sectionHeader h2::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: #f15a22;
+}
+
+.sectionHeader p {
+  font-size: 1.1rem;
+  color: #666;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.memberCard {
+  height: 100%;
+  text-align: center;
+  padding: 40px 20px;
+  border-radius: 8px;
+  transition: all 0.3s;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.memberCard:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.memberCard h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.memberCard p {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.learnMoreBtn {
+  color: #f15a22;
+  font-weight: 500;
+  padding: 0;
+  height: auto;
+}
+
+.learnMoreBtn:hover {
+  color: #d84a14;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 40px;
+}
+
+.paginationButton {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 8px;
+  background: #f5f5f5;
+  color: #333;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.paginationButton:hover:not(:disabled) {
+  background: #f15a22;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.paginationButton:disabled {
+  background: #e0e0e0;
+  color: #999;
+  cursor: not-allowed;
+}
+
+.paginationButton.active {
+  background: #f15a22;
+  color: white;
+  font-weight: 600;
+}
+
+.arrowButton {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.ellipsis {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  color: #666;
+  font-size: 1rem;
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.error {
+  color: #ff4d4f;
+  text-align: center;
+  margin: 20px 0;
+}
+
+@media (max-width: 768px) {
+  .membersSection {
+    padding: 60px 0;
+  }
+
+  .sectionHeader {
+    margin-bottom: 40px;
+  }
+
+  .sectionHeader h2 {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .sectionHeader h2 {
+    font-size: 1.8rem;
+  }
+
+  .pagination {
+    gap: 6px;
+  }
+
+  .paginationButton {
+    width: 36px;
+    height: 36px;
+    font-size: 0.9rem;
+  }
+
+  .arrowButton {
+    font-size: 1rem;
+  }
+
+  .ellipsis {
+    width: 36px;
+    height: 36px;
+    font-size: 0.9rem;
+  }
+}

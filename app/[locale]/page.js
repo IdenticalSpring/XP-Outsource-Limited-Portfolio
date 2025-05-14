@@ -8,6 +8,7 @@ import Header from "../../src/components/Header";
 import Footer from "../../src/components/Footer";
 import BannerCarousel from "../../src/components/Banner";
 import BlogList from "../../src/components/blog/BlogList";
+import MemberList from "../../src/components/member/MemberList";
 import Link from "next/link";
 import styles from "./page.module.css";
 import { useState, useEffect } from "react";
@@ -36,14 +37,6 @@ export default function Home() {
   const contactBanner = banners.find(
     (banner) => banner.slug === SLUGS_CONFIG.banners.find((b) => b.key === "contactCtaBanner").slug,
   );
-
-  const techPartners = [
-    { name: "Microsoft", logo: "/images/microsoft.png" },
-    { name: "Google", logo: "/images/google.png" },
-    { name: "Amazon", logo: "/images/amazon.png" },
-    { name: "IBM", logo: "/images/ibm.png" },
-    { name: "Oracle", logo: "/images/oracle.png" },
-  ];
 
   const achievements = [
     { number: "500+", text: t("achievements.projects") },
@@ -82,6 +75,7 @@ export default function Home() {
       <Header />
       <BannerCarousel locale={locale} banners={mainBanners} isLoading={isLoading} />
       <BlogList locale={locale} />
+     
 
       <section id="about" className={styles.aboutSection}>
         <div className={styles.sectionContainer}>
@@ -149,23 +143,7 @@ export default function Home() {
           </Row>
         </div>
       </section>
-
-      <section id="partners" className={styles.partnersSection}>
-        <div className={styles.sectionContainer}>
-          <div className={styles.sectionHeader}>
-            <h2>{t("partnersTitle")}</h2>
-            <p>{t("partnersDescription")}</p>
-          </div>
-          <div className={styles.partnerLogos}>
-            {techPartners.map((partner, index) => (
-              <div key={index} className={styles.partnerLogo}>
-                <div className={styles.logoPlaceholder}>{partner.name}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
+      <MemberList locale={locale} />
       <section id="contact" className={styles.ctaSection}>
         {contactBanner && !isLoading && (
           <div

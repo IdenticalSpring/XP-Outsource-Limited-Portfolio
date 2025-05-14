@@ -1,7 +1,15 @@
 {
+  "menu": {
+    "home": "Home",
+    "blog": "Blog",
+    "about": "About Us",
+    "members": "Members",
+    "contact": "Contact"
+  },
   "home": "Home",
   "blog": "Blog",
   "about": "About Us",
+  "members": "Members",
   "contact": "Contact",
   "getStarted": "Get Started",
   "logo": "XP OutSource",
@@ -80,5 +88,11 @@
   "previous": "Previous",
   "next": "Next",
   "page": "Page",
-  "noDescription": "No description available."
+  "noDescription": "No description available.",
+  "membersSectionTitle": "Our Members",
+  "membersSectionDescription": "Meet our talented team members",
+  "noMembersAvailable": "No members available at the moment.",
+  "memberNotFound": "Member not found",
+  "backToMembers": "Back to Members",
+  "loadError": "Failed to load member. Please try again later."
 }

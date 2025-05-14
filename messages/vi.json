@@ -1,6 +1,14 @@
 {
+  "menu": {
+    "home": "Trang chủ",
+    "blog": "Blog",
+    "members": "Thành viên",
+    "about": "Về chúng tôi",
+    "contact": "Liên hệ"
+  },
   "home": "Trang chủ",
   "blog": "Blog",
+  "members": "Thành viên",
   "about": "Về chúng tôi",
   "contact": "Liên hệ",
   "getStarted": "Bắt đầu",
@@ -80,5 +88,11 @@
   "previous": "Trước",
   "next": "Tiếp",
   "page": "Trang",
-  "noDescription": "Không có mô tả."
+  "noDescription": "Không có mô tả.",
+  "membersSectionTitle": "Thành viên của chúng tôi",
+  "membersSectionDescription": "Gặp gỡ đội ngũ tài năng của chúng tôi",
+  "noMembersAvailable": "Hiện tại không có thành viên nào.",
+  "memberNotFound": "Không tìm thấy thành viên",
+  "backToMembers": "Quay lại danh sách thành viên",
+  "loadError": "Không tải được thành viên. Vui lòng thử lại sau."
 }
