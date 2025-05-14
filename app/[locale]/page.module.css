@@ -1,3 +1,15 @@
+/* src/pages/index/page.module.css */
+
+/* Reset padding/margin mặc định của Ant Design để tránh lệch */
+:where(.ant-row) {
+  margin: 0 !important;
+}
+
+:where(.ant-col) {
+  padding: 0 !important;
+}
+
+/* Container chính */
 .container {
   overflow-x: hidden;
 }
@@ -39,59 +51,6 @@
   color: #666;
   max-width: 700px;
   margin: 0 auto;
-}
-
-/* Services Section */
-.servicesSection {
-  padding: 100px 0;
-  background-color: #f9f9f9;
-}
-
-.serviceCard {
-  height: 100%;
-  text-align: center;
-  padding: 40px 20px;
-  border-radius: 8px;
-  transition: all 0.3s;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-}
-
-.serviceCard:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-}
-
-.serviceIcon {
-  margin-bottom: 20px;
-  color: #f15a22;
-  height: 80px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.serviceCard h3 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 15px;
-  color: #333;
-}
-
-.serviceCard p {
-  font-size: 1rem;
-  color: #666;
-  margin-bottom: 20px;
-}
-
-.learnMoreBtn {
-  color: #f15a22;
-  font-weight: 500;
-  padding: 0;
-  height: auto;
-}
-
-.learnMoreBtn:hover {
-  color: #d84a14;
 }
 
 /* About Section */
@@ -156,15 +115,19 @@
 
 .featureItem {
   display: flex;
-  align-items: flex-start;
-  margin-bottom: 20px;
+  align-items: center; /* Căn giữa theo chiều dọc */
+  gap: 15px; /* Khoảng cách giữa icon và nội dung */
+  margin-bottom: 30px;
 }
 
 .featureIcon {
-  font-size: 1.5rem;
+  font-size: 2rem; /* Kích thước icon */
   color: #f15a22;
-  margin-right: 15px;
-  min-width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px; /* Kích thước cố định để tránh lệch */
+  height: 40px;
 }
 
 .featureItem h4 {
@@ -206,6 +169,11 @@
 .achievementItem {
   text-align: center;
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 150px; /* Đảm bảo chiều cao đồng đều */
 }
 
 .achievementItem h3 {
@@ -218,6 +186,7 @@
 .achievementItem p {
   font-size: 1.1rem;
   color: #fff;
+  margin: 0;
 }
 
 /* Partners Section */
@@ -272,7 +241,7 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  filter: blur(10px); /* Làm mờ hình nền */
+  filter: blur(10px);
   z-index: 0;
 }
 
@@ -283,7 +252,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.8); /* Overlay đen đậm */
+  background: rgba(0, 0, 0, 0.8);
   z-index: 1;
 }
 
@@ -330,13 +299,31 @@
   .ctaContent h2 {
     font-size: 2.2rem;
   }
+
+  .featureItem {
+    flex-direction: column; /* Xếp chồng trên màn hình nhỏ hơn */
+    align-items: center;
+    text-align: center;
+  }
+
+  .featureIcon {
+    margin-bottom: 15px;
+    margin-right: 0;
+  }
 }
 
 @media (max-width: 768px) {
-  .servicesSection,
   .aboutSection,
   .ctaSection {
     padding: 60px 0;
+  }
+
+  .achievementsSection {
+    padding: 40px 0;
+  }
+
+  .partnersSection {
+    padding: 40px 0;
   }
 
   .sectionHeader {
@@ -349,8 +336,16 @@
     font-size: 2rem;
   }
 
+  .achievementItem {
+    min-height: 120px;
+  }
+
   .achievementItem h3 {
     font-size: 2.5rem;
+  }
+
+  .partnerLogos {
+    gap: 20px;
   }
 }
 
@@ -361,6 +356,10 @@
     font-size: 1.8rem;
   }
 
+  .ctaContent p {
+    font-size: 1rem;
+  }
+
   .ctaButton {
     height: 45px;
     padding: 0 20px;
@@ -369,5 +368,14 @@
 
   .achievementItem h3 {
     font-size: 2rem;
+  }
+
+  .partnerLogo {
+    height: 60px;
+  }
+
+  .logoPlaceholder {
+    height: 40px;
+    width: 100px;
   }
 }

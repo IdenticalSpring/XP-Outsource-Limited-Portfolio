@@ -1,3 +1,4 @@
+// src/pages/index.js
 "use client";
 import { Button, Col, Row } from "antd";
 import { useParams } from "next/navigation";
@@ -8,10 +9,10 @@ import Footer from "../../src/components/Footer";
 import BannerCarousel from "../../src/components/Banner";
 import BlogList from "../../src/components/blog/BlogList";
 import Link from "next/link";
-import { about } from "../../src/data/data";
 import styles from "./page.module.css";
 import { useState, useEffect } from "react";
 import { fetchBanners } from "../../src/lib/api";
+import { SLUGS_CONFIG } from "../../src/config/slugs";
 
 export default function Home() {
   const { locale } = useParams();
@@ -23,7 +24,6 @@ export default function Home() {
     const loadBanners = async () => {
       setIsLoading(true);
       const fetchedBanners = await fetchBanners(locale);
-      console.log("Fetched banners:", fetchedBanners);
       setBanners(fetchedBanners);
       setIsLoading(false);
     };
@@ -31,13 +31,11 @@ export default function Home() {
   }, [locale]);
 
   const mainBanners = banners.filter(
-    (banner) => banner.slug !== "contact-cta-banner"
+    (banner) => !SLUGS_CONFIG.banners.find((b) => b.slug === banner.slug && !b.isMainBanner),
   );
   const contactBanner = banners.find(
-    (banner) => banner.slug === "contact-cta-banner"
+    (banner) => banner.slug === SLUGS_CONFIG.banners.find((b) => b.key === "contactCtaBanner").slug,
   );
-  console.log("Main banners:", mainBanners);
-  console.log("Contact banner:", contactBanner);
 
   const techPartners = [
     { name: "Microsoft", logo: "/images/microsoft.png" },
@@ -48,20 +46,20 @@ export default function Home() {
   ];
 
   const achievements = [
-    { number: "500+", text: "Successful Projects" },
-    { number: "50+", text: "Global Clients" },
-    { number: "10+", text: "Years Experience" },
-    { number: "100+", text: "Expert Developers" },
+    { number: "500+", text: t("achievements.projects") },
+    { number: "50+", text: t("achievements.clients") },
+    { number: "10+", text: t("achievements.experience") },
+    { number: "100+", text: t("achievements.developers") },
   ];
 
   const getTranslation = (banner) => {
     if (!banner || !banner.translations || banner.translations.length === 0) {
       console.warn("Invalid banner or translations:", banner);
       return {
-        title: "Error: No translation available",
-        description: "Please check banner data",
-        buttonText: "Contact Us",
-        buttonLink: "/contact",
+        title: t("errorNoTranslation"),
+        description: t("checkBannerData"),
+        buttonText: t("contactUs"),
+        buttonLink: `/${locale}/contact`,
       };
     }
     const translation =
@@ -82,11 +80,7 @@ export default function Home() {
   return (
     <div className={styles.container}>
       <Header />
-      <BannerCarousel
-        locale={locale}
-        banners={mainBanners}
-        isLoading={isLoading}
-      />
+      <BannerCarousel locale={locale} banners={mainBanners} isLoading={isLoading} />
       <BlogList locale={locale} />
 
       <section id="about" className={styles.aboutSection}>
@@ -99,19 +93,16 @@ export default function Home() {
             </Col>
             <Col xs={24} md={12}>
               <div className={styles.aboutContent}>
-                <h2>{t("aboutTitle") || "About XP OutSource"}</h2>
-                <p className={styles.aboutDescription}>{about.mission}</p>
+                <h2>{t("aboutTitle")}</h2>
+                <p className={styles.aboutDescription}>{t("aboutMission")}</p>
                 <div className={styles.aboutFeatures}>
                   <div className={styles.featureItem}>
                     <div className={styles.featureIcon}>
                       <FaLaptopCode />
                     </div>
                     <div>
-                      <h4>{t("expertTeamTitle") || "Expert Team"}</h4>
-                      <p>
-                        {t("expertTeamDescription") ||
-                          "Skilled developers with cutting-edge expertise"}
-                      </p>
+                      <h4>{t("expertTeamTitle")}</h4>
+                      <p>{t("expertTeamDescription")}</p>
                     </div>
                   </div>
                   <div className={styles.featureItem}>
@@ -119,11 +110,8 @@ export default function Home() {
                       <FaDatabase />
                     </div>
                     <div>
-                      <h4>{t("advancedTechTitle") || "Advanced Technology"}</h4>
-                      <p>
-                        {t("advancedTechDescription") ||
-                          "Using the latest technologies and frameworks"}
-                      </p>
+                      <h4>{t("advancedTechTitle")}</h4>
+                      <p>{t("advancedTechDescription")}</p>
                     </div>
                   </div>
                   <div className={styles.featureItem}>
@@ -131,17 +119,14 @@ export default function Home() {
                       <FaProjectDiagram />
                     </div>
                     <div>
-                      <h4>{t("agileProcessTitle") || "Agile Process"}</h4>
-                      <p>
-                        {t("agileProcessDescription") ||
-                          "Efficient development with transparent communication"}
-                      </p>
+                      <h4>{t("agileProcessTitle")}</h4>
+                      <p>{t("agileProcessDescription")}</p>
                     </div>
                   </div>
                 </div>
                 <Link href="#contact">
                   <Button type="primary" className={styles.aboutButton}>
-                    {t("learnMoreAboutUs") || "Learn More About Us"}
+                    {t("learnMoreAboutUs")}
                   </Button>
                 </Link>
               </div>
@@ -168,11 +153,8 @@ export default function Home() {
       <section id="partners" className={styles.partnersSection}>
         <div className={styles.sectionContainer}>
           <div className={styles.sectionHeader}>
-            <h2>{t("partnersTitle") || "Our Technology Partners"}</h2>
-            <p>
-              {t("partnersDescription") ||
-                "We collaborate with industry leaders to deliver exceptional solutions"}
-            </p>
+            <h2>{t("partnersTitle")}</h2>
+            <p>{t("partnersDescription")}</p>
           </div>
           <div className={styles.partnerLogos}>
             {techPartners.map((partner, index) => (
@@ -197,8 +179,8 @@ export default function Home() {
           <div className={styles.ctaContent}>
             {isLoading ? (
               <div>
-                <h2>Loading banner...</h2>
-                <p>Please wait while we fetch the data.</p>
+                <h2>{t("loading")}</h2>
+                <p>{t("loading")}</p>
               </div>
             ) : contactBanner ? (
               (() => {
@@ -221,11 +203,8 @@ export default function Home() {
               })()
             ) : (
               <div>
-                <h2>Error: Contact banner not found</h2>
-                <p>
-                  Please ensure a banner with slug "contact-cta-banner" exists
-                  in the database.
-                </p>
+                <h2>{t("errorBannerNotFound")}</h2>
+                <p>{t("checkBannerData")}</p>
               </div>
             )}
           </div>

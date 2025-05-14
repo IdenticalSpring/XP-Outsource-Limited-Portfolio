@@ -179,3 +179,12 @@ export const deleteBlog = async (locale, id) => {
     throw new Error("Failed to delete banner");
   }
 };
+export const fetchContact = async (locale, slug) => {
+  try {
+    const data = await fetchWithLocale(`${API_URL}/contact/${locale}/${slug}`, locale);
+    return data || null;
+  } catch (error) {
+    console.warn(`Failed to fetch contact for slug ${slug} and locale ${locale}: ${error.message}`);
+    return null;
+  }
+};

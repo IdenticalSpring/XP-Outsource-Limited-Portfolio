@@ -1,0 +1,124 @@
+/* src/pages/contact/page.module.css */
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.ctaSection {
+  flex: 1;
+  padding: 60px 20px;
+  background-color: #f9f9f9;
+}
+
+.sectionContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.ctaContent {
+  text-align: center;
+}
+
+.ctaContent h2 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.ctaContent p {
+  font-size: 1.1rem;
+  margin-bottom: 40px;
+  color: #555;
+}
+
+.contactLayout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  justify-content: center;
+}
+
+.formContainer {
+  flex: 1;
+  min-width: 300px;
+  max-width: 500px;
+}
+
+.form {
+  text-align: left;
+}
+
+.contactInfo {
+  flex: 1;
+  min-width: 300px;
+  max-width: 400px;
+  text-align: left;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.secondaryContactsGrid {
+  margin-top: 60px;
+  text-align: center;
+}
+
+.secondaryContactsGrid h3 {
+  font-size: 2rem;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+.gridContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  justify-items: center;
+}
+
+.secondaryContact {
+  text-align: left;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  width: 100%;
+}
+
+.contactInfo h3,
+.secondaryContact h4 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.contactItem {
+  margin-bottom: 15px;
+  font-size: 1rem;
+}
+
+.contactLabel {
+  font-weight: bold;
+  margin-right: 10px;
+  color: #555;
+}
+
+.ctaButton {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+  .contactLayout {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .gridContainer {
+    grid-template-columns: 1fr;
+  }
+}
