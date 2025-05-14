@@ -76,5 +76,9 @@
   "emailBodyName": "Name",
   "emailBodyEmail": "Email",
   "emailBodyMessage": "Message",
-  "emailBodyClosing": "Best regards,"
+  "emailBodyClosing": "Best regards,",
+  "previous": "Previous",
+  "next": "Next",
+  "page": "Page",
+  "noDescription": "No description available."
 }

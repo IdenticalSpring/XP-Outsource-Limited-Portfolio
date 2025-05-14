@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Menu, Button, Drawer } from "antd";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { MenuOutlined, SearchOutlined, DownOutlined } from "@ant-design/icons";
 import { useTranslations, useLocale } from "next-intl";
 import { setCookie } from "cookies-next";
@@ -16,6 +16,7 @@ export default function Header() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const t = useTranslations();
   const locale = useLocale();
 
@@ -38,49 +39,84 @@ export default function Header() {
 
     document.addEventListener("click", handleClickOutside);
 
+    // Kiểm tra query parameter 'section' để cuộn sau khi chuyển trang
+    const sectionId = searchParams.get("section");
+    if (isHomePage && sectionId) {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        const headerHeight = document.querySelector(`.${styles.header}`)?.offsetHeight || 0;
+        const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+        window.scrollTo({
+          top: elementPosition - headerHeight,
+          behavior: "smooth",
+        });
+        // Xóa class highlight từ tất cả section trước đó
+        document.querySelectorAll(".highlight").forEach((el) => el.classList.remove("highlight"));
+        // Thêm class highlight cho section hiện tại
+        element.classList.add("highlight");
+      }
+      // Xóa query parameter sau khi cuộn
+      const newUrl = `${window.location.pathname}`;
+      window.history.replaceState(null, "", newUrl);
+    }
+
     return () => {
       window.removeEventListener("scroll", handleScroll);
       document.removeEventListener("click", handleClickOutside);
     };
-  }, []);
+  }, [searchParams, isHomePage]);
 
   const handleScrollTo = (sectionId) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-      setVisible(false);
+    if (isHomePage) {
+      // Nếu đang ở trang chủ, cuộn trực tiếp
+      const element = document.getElementById(sectionId);
+      if (element) {
+        const headerHeight = document.querySelector(`.${styles.header}`)?.offsetHeight || 0;
+        const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+        window.scrollTo({
+          top: elementPosition - headerHeight,
+          behavior: "smooth",
+        });
+        document.querySelectorAll(".highlight").forEach((el) => el.classList.remove("highlight"));
+        element.classList.add("highlight");
+      }
+    } else {
+      // Nếu không ở trang chủ, chuyển về trang chủ với query parameter
+      router.push(`/${locale}?section=${sectionId}`);
     }
+    setVisible(false);
   };
 
   const handleLanguageChange = (value) => {
     if (value !== locale) {
       setCookie("NEXT_LOCALE", value);
-      router.push(pathname.replace(`/${locale}`, `/${value}`));
+      const newPathname = pathname.replace(`/${locale}`, `/${value}`);
+      router.push(newPathname);
       setDropdownOpen(false);
     }
   };
 
   const menuItems = menuConfig.map((item) => ({
     key: item.key,
-    label:
-      pathname === `/${locale}` || pathname.includes(`/${locale}/blog/`) ? (
-        <a
-          href={item.href}
-          onClick={(e) => {
+    label: (
+      <Link
+        href={item.link.replace("[locale]", locale)}
+        onClick={(e) => {
+          // Nếu đang ở trang chủ và mục là section (about, blog, contact), cuộn thay vì chuyển hướng
+          if (isHomePage && (item.key === "about" || item.key === "blog" || item.key === "contact")) {
             e.preventDefault();
-            if (item.key === "home") {
-              window.scrollTo({ top: 0, behavior: "smooth" });
-            } else {
-              handleScrollTo(item.key);
-            }
-            setVisible(false);
-          }}
-        >
-          {t(item.translationKey)}
-        </a>
-      ) : (
-        <Link href={item.link}>{t(item.translationKey)}</Link>
-      ),
+            handleScrollTo(item.key);
+          } else if (!isHomePage && (item.key === "about" || item.key === "blog" || item.key === "contact")) {
+            // Nếu ở trang khác, chuyển về trang chủ với section
+            e.preventDefault();
+            handleScrollTo(item.key);
+          }
+          setVisible(false);
+        }}
+      >
+        {t(item.translationKey)}
+      </Link>
+    ),
   }));
 
   return (
@@ -103,11 +139,7 @@ export default function Header() {
             <Button
               type="primary"
               className={styles.contactButton}
-              onClick={() =>
-                pathname === `/${locale}` || pathname.includes(`/${locale}/blog/`)
-                  ? handleScrollTo("contact")
-                  : (window.location.href = `/${locale}/contact`)
-              }
+              onClick={() => handleScrollTo("contact")}
             >
               {t("getStarted")}
             </Button>
@@ -164,11 +196,7 @@ export default function Header() {
           type="primary"
           block
           className={styles.drawerContactBtn}
-          onClick={() =>
-            pathname === `/${locale}` || pathname.includes(`/${locale}/blog/`)
-              ? handleScrollTo("contact")
-              : (window.location.href = `/${locale}/contact`)
-          }
+          onClick={() => handleScrollTo("contact")}
         >
           {t("getStarted")}
         </Button>

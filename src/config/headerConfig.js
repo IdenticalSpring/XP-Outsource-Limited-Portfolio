@@ -1,37 +1,38 @@
-export const languages = {
-  en: {
-    name: "English",
-    flag: "🇺🇸",
-  },
-  vi: {
-    name: "Tiếng Việt",
-    flag: "🇻🇳",
-  },
-};
 
 export const menuConfig = [
   {
     key: "home",
-    href: "#home",
+    href: "#home", 
+    link: "/[locale]", 
     translationKey: "home",
-    link: "/",
-  },
-{
-    key: "blog", 
-    href: "#blog", 
-    translationKey: "blog",
-    link: "/blog",
   },
   {
     key: "about",
     href: "#about",
+    link: "/[locale]#about",
     translationKey: "about",
-    link: "/about",
   },
   {
     key: "contact",
     href: "#contact",
+    link: "/[locale]/contact",
     translationKey: "contact",
-    link: "/contact",
+  },
+  {
+    key: "blog",
+    href: "/[locale]/blog",
+    link: "/[locale]/blog",
+    translationKey: "blog",
   },
 ];
+
+export const languages = {
+  en: {
+    name: "English",
+    flag: "🇬🇧",
+  },
+  vi: {
+    name: "Vietnamese",
+    flag: "🇻🇳",
+  },
+};

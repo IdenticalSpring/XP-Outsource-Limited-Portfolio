@@ -79,20 +79,21 @@ export const fetchBlog = async (locale, slug) => {
     return null;
   }
 };
-
-export const fetchBlogs = async (locale, page = 1, limit = 6) => {
+export const fetchBlogs = async (locale, page = 1, limit = 3) => {
   try {
-    const data = await fetchWithLocale(
+    const response = await fetchWithLocale(
       `${API_URL}/blog?page=${page}&limit=${limit}`,
       locale
     );
-    return data.blogs || [];
+    return {
+      data: response.blogs || [],
+      total: response.total || 0,
+    };
   } catch (error) {
     console.warn(`Failed to fetch blogs, returning empty array`);
-    return [];
+    return { data: [], total: 0 };
   }
 };
-
 // Hàm login admin
 export const loginAdmin = async (locale, credentials) => {
   try {

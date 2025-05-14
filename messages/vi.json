@@ -76,5 +76,9 @@
   "emailBodyName": "Tên",
   "emailBodyEmail": "Email",
   "emailBodyMessage": "Tin nhắn",
-  "emailBodyClosing": "Trân trọng,"
+  "emailBodyClosing": "Trân trọng,",
+  "previous": "Trước",
+  "next": "Tiếp",
+  "page": "Trang",
+  "noDescription": "Không có mô tả."
 }
