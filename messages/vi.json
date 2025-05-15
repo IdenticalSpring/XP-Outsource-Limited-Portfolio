@@ -97,5 +97,8 @@
   "loadError": "Không tải được thành viên. Vui lòng thử lại sau.",
   "noBlogsFound": "Không tìm thấy blog nào.",
   "blogTitle": "Tiêu đề blog",
-  "addressTitle": "Địa chỉ"
+  "addressTitle": "Địa chỉ",
+  "sitemapContent": "Đây là nội dung của trang Sơ đồ trang web. Vui lòng cập nhật nội dung thực tế.",
+  "privacyPolicyContent": "Đây là nội dung của chính sách bảo mật. Vui lòng cập nhật nội dung thực tế.",
+  "termsOfServiceContent": "Đây là nội dung của điều khoản dịch vụ. Vui lòng cập nhật nội dung thực tế."
 }

@@ -95,7 +95,10 @@
   "memberNotFound": "Member not found",
   "backToMembers": "Back to Members",
   "loadError": "Failed to load member. Please try again later.",
+  "sitemapContent": "This is the content of the sitemap. Please update with actual content.",
   "noBlogsFound": "No blogs found.",
-  "blogTitle": "Blog Title",
-  "addressTitle": "Address"
+  "addressTitle": "Address",
+  "blogTitle": "Blog",
+  "privacyPolicyContent": "This is the content of the privacy policy. Please update with actual content.",
+  "termsOfServiceContent": "This is the content of the terms of service. Please update with actual content."
 }

@@ -1,0 +1,53 @@
+/* src/pages/[locale]/terms-of-service/page.module.css */
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main {
+  flex: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  width: 100%;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.content {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: #555;
+}
+
+.content p {
+  margin-bottom: 20px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .main {
+    padding: 30px 15px;
+  }
+
+  .title {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .main {
+    padding: 20px 10px;
+  }
+
+  .title {
+    font-size: 1.8rem;
+  }
+}
