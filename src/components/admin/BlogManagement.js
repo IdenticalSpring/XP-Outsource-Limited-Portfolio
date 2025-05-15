@@ -17,10 +17,12 @@ const { TextArea } = Input;
 const getImageUrl = (imagePath) => {
   if (!imagePath) return "";
   if (imagePath.startsWith("http")) return imagePath;
-  const url = `${process.env.NEXT_PUBLIC_API_URL}${imagePath}`;
-  console.log("Generated image URL:", url);
-  return url;
+  return `${process.env.NEXT_PUBLIC_API_URL}${imagePath}`;
 };
+
+// Lấy translation theo ngôn ngữ
+const getTranslation = (blog, locale) =>
+  blog.translations?.find((t) => t.language === locale) || {};
 
 export default function BlogsManagement() {
   const locale = useLocale();
@@ -30,12 +32,11 @@ export default function BlogsManagement() {
   const [editingBlog, setEditingBlog] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Hàm tải danh sách blog
   const loadBlogs = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await fetchBlogs(locale);
-      const filteredData = data.filter(
+      const { data: blogsData } = await fetchBlogs(locale);
+      const filteredData = blogsData.filter(
         (blog) =>
           blog.translations &&
           blog.translations.some((t) => t.language === locale)
@@ -49,12 +50,10 @@ export default function BlogsManagement() {
     }
   }, [locale]);
 
-  // Tải danh sách blog khi component mount hoặc locale thay đổi
   useEffect(() => {
     loadBlogs();
   }, [loadBlogs]);
 
-  // Cấu hình cột cho DataTable
   const columns = [
     { title: "ID", dataIndex: "id", key: "id" },
     { title: "Slug", dataIndex: "slug", key: "slug" },
@@ -79,16 +78,35 @@ export default function BlogsManagement() {
     {
       title: "Title",
       key: "title",
-      render: (_, record) => {
-        const translation = record.translations?.find(
-          (t) => t.language === locale
-        );
-        return translation?.title || "No translation";
-      },
+      render: (_, record) => getTranslation(record, locale).title || "No title",
     },
+    {
+      title: "Meta Title",
+      key: "metaTitle",
+      render: (_, record) => getTranslation(record, locale).metaTitle || "-",
+    },
+    {
+      title: "Date",
+      dataIndex: "date",
+      key: "date",
+      render: (text) => moment(text).format("YYYY-MM-DD"),
+    },
+    // {
+    //   title: "Actions",
+    //   key: "actions",
+    //   render: (_, record) => (
+    //     <>
+    //       <Button type="link" onClick={() => handleEdit(record)}>
+    //         Edit
+    //       </Button>
+    //       <Button type="link" danger onClick={() => handleDelete(record.id)}>
+    //         Delete
+    //       </Button>
+    //     </>
+    //   ),
+    // },
   ];
 
-  // Cấu hình trường cho FormModal
   const fields = [
     {
       name: "slug",
@@ -110,7 +128,7 @@ export default function BlogsManagement() {
       name: "canonicalUrl",
       label: "Canonical URL",
       rules: [{ required: true, message: "Vui lòng nhập canonical URL" }],
-      placeholder: "Nhập canonical URL (ví dụ: https://example.com/blog/slug)",
+      placeholder: "https://example.com/blog/slug",
     },
     {
       name: "date",
@@ -139,8 +157,8 @@ export default function BlogsManagement() {
       label: "Meta Title",
       rules: [
         { required: true, message: "Vui lòng nhập meta title" },
-        { min: 10, message: "Meta title phải có ít nhất 10 ký tự" },
-        { max: 70, message: "Meta title không được vượt quá 70 ký tự" },
+        { min: 10, message: "Tối thiểu 10 ký tự" },
+        { max: 70, message: "Tối đa 70 ký tự" },
       ],
     },
     {
@@ -148,19 +166,19 @@ export default function BlogsManagement() {
       label: "Meta Description",
       rules: [
         { required: true, message: "Vui lòng nhập meta description" },
-        { min: 50, message: "Meta description phải có ít nhất 50 ký tự" },
-        { max: 160, message: "Meta description không được vượt quá 160 ký tự" },
+        { min: 50, message: "Tối thiểu 50 ký tự" },
+        { max: 160, message: "Tối đa 160 ký tự" },
       ],
       type: "textarea",
     },
     {
       name: ["translations", 0, "ogTitle"],
-      label: "Open Graph Title",
+      label: "OG Title",
       rules: [{ required: true, message: "Vui lòng nhập OG title" }],
     },
     {
       name: ["translations", 0, "ogDescription"],
-      label: "Open Graph Description",
+      label: "OG Description",
       rules: [{ required: true, message: "Vui lòng nhập OG description" }],
       type: "textarea",
     },
@@ -172,8 +190,7 @@ export default function BlogsManagement() {
     },
   ];
 
-  // Xử lý thêm blog mới
-  const handleAdd = useCallback(() => {
+  const handleAdd = () => {
     setEditingBlog(null);
     form.resetFields();
     form.setFieldsValue({
@@ -181,104 +198,76 @@ export default function BlogsManagement() {
       date: moment(),
     });
     setIsModalVisible(true);
-  }, [form, locale]);
+  };
 
-  // Xử lý chỉnh sửa blog
-  const handleEdit = useCallback(
-    (blog) => {
-      setEditingBlog(blog);
-      const translation =
-        blog.translations?.find((t) => t.language === locale) || {};
-      form.setFieldsValue({
-        slug: blog.slug,
-        image: blog.image,
-        altText: blog.altText,
-        canonicalUrl: blog.canonicalUrl,
-        date: blog.date ? moment(blog.date) : null,
-        translations: [
-          {
-            language: translation.language || locale,
-            title: translation.title,
-            metaTitle: translation.metaTitle,
-            metaDescription: translation.metaDescription,
-            ogTitle: translation.ogTitle,
-            ogDescription: translation.ogDescription,
-            content: translation.content,
-          },
-        ],
-      });
-      setIsModalVisible(true);
-    },
-    [form, locale]
-  );
-
-  // Xử lý xóa blog với xác nhận
-  const handleDelete = useCallback(
-    (id) => {
-      Modal.confirm({
-        title: "Xác nhận xóa",
-        content: "Bạn có chắc chắn muốn xóa blog này?",
-        onOk: async () => {
-          try {
-            await deleteBlog(locale, id);
-            setBlogs(blogs.filter((blog) => blog.id !== id));
-            message.success("Xóa blog thành công");
-          } catch (error) {
-            console.error("Error deleting blog:", error);
-            message.error(`Không thể xóa blog: ${error.message}`);
-          }
+  const handleEdit = (blog) => {
+    setEditingBlog(blog);
+    const translation = getTranslation(blog, locale);
+    form.setFieldsValue({
+      slug: blog.slug,
+      image: blog.image,
+      altText: blog.altText,
+      canonicalUrl: blog.canonicalUrl,
+      date: blog.date ? moment(blog.date) : null,
+      translations: [
+        {
+          language: translation.language || locale,
+          title: translation.title,
+          metaTitle: translation.metaTitle,
+          metaDescription: translation.metaDescription,
+          ogTitle: translation.ogTitle,
+          ogDescription: translation.ogDescription,
+          content: translation.content,
         },
-      });
-    },
-    [blogs, locale]
-  );
+      ],
+    });
+    setIsModalVisible(true);
+  };
 
-  // Xử lý lưu blog (thêm hoặc cập nhật)
+  const handleDelete = (id) => {
+    Modal.confirm({
+      title: "Xác nhận xóa",
+      content: "Bạn có chắc chắn muốn xóa blog này?",
+      onOk: async () => {
+        try {
+          await deleteBlog(locale, id);
+          setBlogs((prev) => prev.filter((b) => b.id !== id));
+          message.success("Xóa blog thành công");
+        } catch (error) {
+          message.error(`Xóa blog thất bại: ${error.message}`);
+        }
+      },
+    });
+  };
+
   const handleModalOk = async () => {
     try {
       const values = await form.validateFields();
-      if (!values.translations[0].language) {
-        throw new Error("Language is missing in translation data");
-      }
-      if (!values.image) {
-        throw new Error("Image path is required");
-      }
-
       const blogData = {
         slug: values.slug,
         image: values.image,
         altText: values.altText,
         canonicalUrl: values.canonicalUrl,
         date: values.date.toISOString(),
-        translations: [
-          {
-            language: values.translations[0].language,
-            title: values.translations[0].title,
-            metaTitle: values.translations[0].metaTitle,
-            metaDescription: values.translations[0].metaDescription,
-            ogTitle: values.translations[0].ogTitle,
-            ogDescription: values.translations[0].ogDescription,
-            content: values.translations[0].content,
-          },
-        ],
+        translations: values.translations,
       };
 
       setLoading(true);
       if (editingBlog) {
-        const updatedBlog = await updateBlog(locale, editingBlog.id, blogData);
-        setBlogs(
-          blogs.map((blog) => (blog.id === editingBlog.id ? updatedBlog : blog))
+        const updated = await updateBlog(locale, editingBlog.id, blogData);
+        setBlogs((prev) =>
+          prev.map((b) => (b.id === editingBlog.id ? updated : b))
         );
         message.success("Cập nhật blog thành công");
       } else {
-        const newBlog = await createBlog(locale, blogData);
-        setBlogs([...blogs, newBlog]);
+        const created = await createBlog(locale, blogData);
+        setBlogs((prev) => [...prev, created]);
         message.success("Thêm blog thành công");
       }
       setIsModalVisible(false);
       form.resetFields();
     } catch (error) {
-      console.error("Error saving blog:", error);
+      console.error(error);
       message.error(`Lưu blog thất bại: ${error.message}`);
     } finally {
       setLoading(false);
@@ -288,7 +277,7 @@ export default function BlogsManagement() {
   return (
     <div className={styles.container}>
       <div className={styles.tableHeader}>
-        <h2>Blogs</h2>
+        <h2>Blog Management</h2>
         <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
           Add Blog
         </Button>
@@ -311,7 +300,10 @@ export default function BlogsManagement() {
         form={form}
         title={editingBlog ? "Edit Blog" : "Add Blog"}
         fields={fields}
-        initialValues={{ translations: [{ language: locale }], date: moment() }}
+        initialValues={{
+          translations: [{ language: locale }],
+          date: moment(),
+        }}
       />
     </div>
   );
