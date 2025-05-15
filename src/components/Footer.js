@@ -3,35 +3,39 @@
 import { Col, Row, Input, Button, Divider } from "antd";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
-import { useTranslations } from "next-intl"; // Import useTranslations
-import { fetchContact } from "../lib/api";
+import { useParams, usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { fetchContact, fetchBlogs } from "../lib/api";
+import { socialLinks, footerLinks } from "../config/footerConfig"; // Import file config
 import styles from "./Footer.module.css";
-import {
-  FaFacebookF,
-  FaTwitter,
-  FaLinkedinIn,
-  FaYoutube,
-  FaMapMarkerAlt,
-  FaPhoneAlt,
-  FaEnvelope,
-  FaArrowRight,
-} from "react-icons/fa";
+import { FaMapMarkerAlt, FaPhoneAlt, FaEnvelope, FaArrowRight } from "react-icons/fa";
 
 export default function Footer() {
   const { locale } = useParams();
-  const t = useTranslations(); // Khởi tạo hook để lấy bản dịch
+  const pathname = usePathname();
+  const t = useTranslations();
   const [contact, setContact] = useState(null);
+  const [blogs, setBlogs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const loadContact = async () => {
+    const loadData = async () => {
       setIsLoading(true);
-      const contactData = await fetchContact(locale, "main-contact");
-      setContact(contactData);
-      setIsLoading(false);
+      try {
+        const [contactData, blogsData] = await Promise.all([
+          fetchContact(locale, "main-contact"),
+          fetchBlogs(locale, 1, 5), 
+        ]);
+        setContact(contactData);
+        setBlogs(blogsData.data || []); 
+        setIsLoading(false);
+      } catch (error) {
+        console.warn(`Failed to load footer data: ${error.message}`);
+        setBlogs([]);
+        setIsLoading(false);
+      }
     };
-    loadContact();
+    loadData();
   }, [locale]);
 
   const getTranslation = () => {
@@ -43,18 +47,48 @@ export default function Footer() {
   };
 
   const translation = getTranslation();
+  const getLinkProps = (section) => {
+    const isHomePage = pathname === `/${locale}` || pathname === `/${locale}/`;
+    if (isHomePage) {
+      return {
+        href: `#${section}`,
+        onClick: (e) => {
+          e.preventDefault();
+          const element = document.getElementById(section);
+          if (element) {
+            element.scrollIntoView({ behavior: "smooth" });
+          }
+        },
+      };
+    }
+    return { href: `/${locale}#${section}` };
+  };
+
+  const getBlogTranslation = (blog) =>
+    blog.translations?.find((t) => t.language === locale) || {};
+  const companyLinks = footerLinks.company.map(item => ({
+    href: `#${item.section}`,
+    label: t(item.translationKey),
+    section: item.section
+  }));
 
   return (
     <footer className={styles.footer}>
       <div className={styles.footerTop}>
-        <Row gutter={[48, 48]} justify="space-between">
+        <Row gutter={[40, 20]} justify="start" className={styles.logoRow}>
+          <Col xs={24} sm={24} md={8} lg={7}>
+            <div className={styles.footerLogo}>{t("logo")}</div>
+          </Col>
+        </Row>
+        <Row gutter={[30, 30]} justify="space-between" className={styles.columnsRow}>
+          {/* Cột 1: Thông tin liên hệ */}
           <Col xs={24} sm={24} md={8} lg={7}>
             <div className={styles.footerWidget}>
-              <div className={styles.footerLogo}>{t("logo")}</div> 
+              <h3 className={styles.contactTitle}>{t("addressTitle") || "Address"}</h3>
               <div className={styles.contactInfo}>
                 <div className={styles.contactItem}>
                   <FaMapMarkerAlt className={styles.contactIcon} />
-                  <span>{isLoading ? t("loading") : translation.address}</span> 
+                  <span>{isLoading ? t("loading") : translation.address}</span>
                 </div>
                 <div className={styles.contactItem}>
                   <FaPhoneAlt className={styles.contactIcon} />
@@ -68,61 +102,57 @@ export default function Footer() {
             </div>
           </Col>
 
-          <Col xs={24} sm={12} md={5} lg={4}>
+          {/* Cột 2: Company Links */}
+          <Col xs={24} sm={12} md={5} lg={5}>
             <div className={styles.footerWidget}>
-              <h3 className={styles.widgetTitle}>{t("companyTitle") || "Company"}</h3> 
+              <h3 className={styles.widgetTitle}>{t("companyTitle")}</h3>
               <ul className={styles.footerLinks}>
-                <li>
-                  <Link href="/about">{t("about")}</Link>
-                </li>
-                <li>
-                  <Link href="/team">{t("teamTitle") || "Our Team"}</Link>
-                </li>
-                <li>
-                  <Link href="/careers">{t("careersTitle") || "Careers"}</Link>
-                </li>
-                <li>
-                  <Link href="/news">{t("newsTitle") || "News"}</Link>
-                </li>
-                <li>
-                  <Link href="/contact">{t("contact")}</Link>
-                </li>
+                {companyLinks.map((link) => (
+                  <li key={link.section}>
+                    <Link {...getLinkProps(link.section)}>
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
           </Col>
 
-          <Col xs={24} sm={12} md={5} lg={4}>
+          {/* Cột 3: Recent Blogs */}
+          <Col xs={24} sm={12} md={5} lg={5}>
             <div className={styles.footerWidget}>
-              <h3 className={styles.widgetTitle}>{t("servicesSectionTitle")}</h3>
+              <h3 className={styles.widgetTitle}>{t("blogSectionTitle")}</h3>
               <ul className={styles.footerLinks}>
-                <li>
-                  <Link href="/services/web">{t("webDevelopmentTitle") || "Web Development"}</Link>
-                </li>
-                <li>
-                  <Link href="/services/mobile">{t("mobileDevelopmentTitle") || "Mobile App Development"}</Link>
-                </li>
-                <li>
-                  <Link href="/services/cloud">{t("cloudSolutionsTitle") || "Cloud Solutions"}</Link>
-                </li>
-                <li>
-                  <Link href="/services/consulting">{t("itConsultingTitle") || "IT Consulting"}</Link>
-                </li>
-                <li>
-                  <Link href="/services/support">{t("techSupportTitle") || "Tech Support"}</Link>
-                </li>
+                {isLoading ? (
+                  <li>{t("loading")}</li>
+                ) : blogs.length > 0 ? (
+                  blogs.slice(0, 3).map((blog) => {
+                    const translation = getBlogTranslation(blog);
+                    return (
+                      <li key={blog.slug}>
+                        <Link href={`/${locale}/blog/${blog.slug}`}>
+                          {translation.title || blog.slug}
+                        </Link>
+                      </li>
+                    );
+                  })
+                ) : (
+                  <li>{t("noBlogsFound")}</li>
+                )}
               </ul>
             </div>
           </Col>
 
+          {/* Cột 4: Newsletter */}
           <Col xs={24} sm={24} md={6} lg={7}>
             <div className={styles.footerWidget}>
-              <h3 className={styles.widgetTitle}>{t("newsletterTitle") || "Newsletter"}</h3>
+              <h3 className={styles.widgetTitle}>{t("newsletterTitle")}</h3>
               <p className={styles.newsletterDesc}>
-                {t("newsletterDescription") || "Subscribe to our newsletter for the latest updates and insights"}
+                {t("newsletterDescription")}
               </p>
               <div className={styles.subscribeForm}>
                 <Input
-                  placeholder={t("emailPlaceholder") || "Your email address"}
+                  placeholder={t("emailPlaceholder")}
                   className={styles.subscribeInput}
                 />
                 <Button type="primary" className={styles.subscribeBtn}>
@@ -130,18 +160,21 @@ export default function Footer() {
                 </Button>
               </div>
               <div className={styles.socialLinks}>
-                <a href="https://facebook.com" className={styles.socialLink}>
-                  <FaFacebookF />
-                </a>
-                <a href="https://twitter.com" className={styles.socialLink}>
-                  <FaTwitter />
-                </a>
-                <a href="https://linkedin.com" className={styles.socialLink}>
-                  <FaLinkedinIn />
-                </a>
-                <a href="https://youtube.com" className={styles.socialLink}>
-                  <FaYoutube />
-                </a>
+                {socialLinks.slice(0, 4).map((social) => {
+                  const Icon = social.icon;
+                  return (
+                    <a 
+                      key={social.id}
+                      href={social.url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className={styles.socialLink} 
+                      aria-label={social.name}
+                    >
+                      <Icon />
+                    </a>
+                  );
+                })}
               </div>
             </div>
           </Col>
@@ -155,9 +188,11 @@ export default function Footer() {
           <p>© 2025 {t("logo")}. All rights reserved.</p>
         </div>
         <div className={styles.footerNav}>
-          <Link href="/privacy-policy">{t("privacyPolicyTitle") || "Privacy Policy"}</Link>
-          <Link href="/terms-of-service">{t("termsOfServiceTitle") || "Terms of Service"}</Link>
-          <Link href="/sitemap">{t("sitemapTitle") || "Sitemap"}</Link>
+          {footerLinks.legalLinks.map((link) => (
+            <Link key={link.key} href={`/${locale}/${link.path}`}>
+              {t(link.translationKey)}
+            </Link>
+          ))}
         </div>
       </div>
     </footer>

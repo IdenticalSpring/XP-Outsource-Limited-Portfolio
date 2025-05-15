@@ -1,33 +1,59 @@
+
 .footer {
   background-color: #222;
   color: rgba(255, 255, 255, 0.7);
-  padding: 80px 40px 30px;
+ padding: 60px 40px 10px;
 }
 
 .footerTop {
   max-width: 1200px;
   margin: 0 auto;
+  width: 100%;
+}
+
+.columnsRow {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.columnsRow .ant-col {
+  display: flex;
+  flex-direction: column;
 }
 
 .footerWidget {
   margin-bottom: 20px;
+  flex: 1; /* Đảm bảo các footerWidget chiếm toàn bộ chiều cao của cột */
 }
 
 .footerLogo {
   font-size: 1.8rem;
   font-weight: 700;
   color: white;
-  margin-bottom: 20px;
 }
 
-.companyDesc {
-  font-size: 1rem;
-  line-height: 1.6;
-  margin-bottom: 25px;
+.contactTitle {
+  color: white;
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 15px;
+  position: relative;
+  padding-bottom: 10px;
+}
+
+.contactTitle::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 40px;
+  height: 2px;
+  background-color: #f15a22;
 }
 
 .contactInfo {
-  margin-top: 25px;
+  margin-top: 10px;
+  flex-grow: 1; 
 }
 
 .contactItem {
@@ -76,6 +102,7 @@
   color: rgba(255, 255, 255, 0.7);
   transition: all 0.3s;
   display: inline-block;
+  text-decoration: none;
 }
 
 .footerLinks a:hover {
@@ -90,9 +117,11 @@
 .subscribeForm {
   display: flex;
   margin-bottom: 25px;
+  width: 100%;
 }
 
 .subscribeInput {
+  flex-grow: 1;
   height: 45px;
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
@@ -130,6 +159,7 @@
 .socialLinks {
   display: flex;
   gap: 15px;
+  margin-top: auto; /* Đẩy social links xuống dưới */
 }
 
 .socialLink {
@@ -151,7 +181,9 @@
 
 .footerDivider {
   background-color: rgba(255, 255, 255, 0.1);
-  margin: 20px 0;
+  margin: 10px auto; /* Giảm margin từ 20px xuống 10px */
+  max-width: 1200px;
+  width: 100%;
 }
 
 .footerBottom {
@@ -160,7 +192,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: 20px;
+  padding-top: 10px; /* Giảm padding-top từ 20px xuống 10px */
+  padding-bottom: 10px; /* Thêm padding-bottom để cân đối */
+  width: 100%;
 }
 
 .copyright {
@@ -176,6 +210,7 @@
   color: rgba(255, 255, 255, 0.7);
   font-size: 0.9rem;
   transition: color 0.3s;
+  text-decoration: none;
 }
 
 .footerNav a:hover {
@@ -185,19 +220,21 @@
 /* Responsive */
 @media (max-width: 992px) {
   .footer {
-    padding: 60px 30px 20px;
+    padding: 60px 30px 10px;
   }
 }
 
 @media (max-width: 768px) {
   .footerBottom {
     flex-direction: column;
-    gap: 15px;
+    gap: 10px; /* Giảm gap từ 15px xuống 10px */
     text-align: center;
+    padding-bottom: 15px;
   }
 
   .footerNav {
     justify-content: center;
+    flex-wrap: wrap;
   }
 
   .footerNav a {
@@ -207,13 +244,14 @@
 
 @media (max-width: 576px) {
   .footer {
-    padding: 50px 20px 20px;
+    padding: 50px 20px 10px;
   }
 
   .footerLogo {
     font-size: 1.6rem;
   }
 
+  .contactTitle,
   .widgetTitle {
     font-size: 1.2rem;
   }

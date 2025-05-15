@@ -94,5 +94,8 @@
   "noMembersAvailable": "No members available at the moment.",
   "memberNotFound": "Member not found",
   "backToMembers": "Back to Members",
-  "loadError": "Failed to load member. Please try again later."
+  "loadError": "Failed to load member. Please try again later.",
+  "noBlogsFound": "No blogs found.",
+  "blogTitle": "Blog Title",
+  "addressTitle": "Address"
 }

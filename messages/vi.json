@@ -94,5 +94,8 @@
   "noMembersAvailable": "Hiện tại không có thành viên nào.",
   "memberNotFound": "Không tìm thấy thành viên",
   "backToMembers": "Quay lại danh sách thành viên",
-  "loadError": "Không tải được thành viên. Vui lòng thử lại sau."
+  "loadError": "Không tải được thành viên. Vui lòng thử lại sau.",
+  "noBlogsFound": "Không tìm thấy blog nào.",
+  "blogTitle": "Tiêu đề blog",
+  "addressTitle": "Địa chỉ"
 }
