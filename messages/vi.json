@@ -100,5 +100,9 @@
   "addressTitle": "Địa chỉ",
   "sitemapContent": "Đây là nội dung của trang Sơ đồ trang web. Vui lòng cập nhật nội dung thực tế.",
   "privacyPolicyContent": "Đây là nội dung của chính sách bảo mật. Vui lòng cập nhật nội dung thực tế.",
-  "termsOfServiceContent": "Đây là nội dung của điều khoản dịch vụ. Vui lòng cập nhật nội dung thực tế."
+  "termsOfServiceContent": "Đây là nội dung của điều khoản dịch vụ. Vui lòng cập nhật nội dung thực tế.",
+  "emailSentSuccess": "Tin nhắn của bạn đã được gửi thành công!",
+  "emailSendFailed": "Gửi tin nhắn thất bại. Vui lòng thử lại sau.",
+  "newsletterSubscribed": "Đăng ký thành công!",
+  "newsletterFailed": "Đăng ký thất bại. Vui lòng thử lại."
 }

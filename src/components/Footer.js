@@ -1,12 +1,11 @@
-// src/components/Footer.js
 "use client";
-import { Col, Row, Input, Button, Divider } from "antd";
+import { Col, Row, Input, Button, Divider, Form, message } from "antd";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useParams, usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { fetchContact, fetchBlogs } from "../lib/api";
-import { socialLinks, footerLinks } from "../config/footerConfig"; // Import file config
+import { fetchContact, fetchBlogs, sendContactEmail } from "../lib/api";
+import { socialLinks, footerLinks } from "../config/footerConfig";
 import styles from "./Footer.module.css";
 import { FaMapMarkerAlt, FaPhoneAlt, FaEnvelope, FaArrowRight } from "react-icons/fa";
 
@@ -17,6 +16,7 @@ export default function Footer() {
   const [contact, setContact] = useState(null);
   const [blogs, setBlogs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [form] = Form.useForm();
 
   useEffect(() => {
     const loadData = async () => {
@@ -24,10 +24,10 @@ export default function Footer() {
       try {
         const [contactData, blogsData] = await Promise.all([
           fetchContact(locale, "main-contact"),
-          fetchBlogs(locale, 1, 5), 
+          fetchBlogs(locale, 1, 5),
         ]);
         setContact(contactData);
-        setBlogs(blogsData.data || []); 
+        setBlogs(blogsData.data || []);
         setIsLoading(false);
       } catch (error) {
         console.warn(`Failed to load footer data: ${error.message}`);
@@ -66,11 +66,27 @@ export default function Footer() {
 
   const getBlogTranslation = (blog) =>
     blog.translations?.find((t) => t.language === locale) || {};
+
   const companyLinks = footerLinks.company.map(item => ({
     href: `#${item.section}`,
     label: t(item.translationKey),
     section: item.section
   }));
+
+  const onFinish = async (values) => {
+    try {
+      await sendContactEmail(locale, {
+        email: values.email,
+        name: "Newsletter Subscriber",
+        content: `User subscribed to newsletter with email: ${values.email}`,
+      });
+      message.success(t("newsletterSubscribed") || "Subscribed successfully!");
+      form.resetFields();
+    } catch (error) {
+      message.error(t("newsletterFailed") || "Failed to subscribe. Please try again.");
+      console.error("Error subscribing to newsletter:", error);
+    }
+  };
 
   return (
     <footer className={styles.footer}>
@@ -150,25 +166,47 @@ export default function Footer() {
               <p className={styles.newsletterDesc}>
                 {t("newsletterDescription")}
               </p>
-              <div className={styles.subscribeForm}>
-                <Input
-                  placeholder={t("emailPlaceholder")}
-                  className={styles.subscribeInput}
-                />
-                <Button type="primary" className={styles.subscribeBtn}>
-                  <FaArrowRight />
-                </Button>
-              </div>
+              <Form
+                form={form}
+                name="newsletter"
+                onFinish={onFinish}
+                className={styles.subscribeForm}
+              >
+                <Form.Item
+                  name="email"
+                  rules={[
+                    {
+                      required: true,
+                      type: "email",
+                      message: t("emailInvalid") || "Please enter a valid email",
+                    },
+                  ]}
+                >
+                  <Input
+                    placeholder={t("emailPlaceholder")}
+                    className={styles.subscribeInput}
+                  />
+                </Form.Item>
+                <Form.Item>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    className={styles.subscribeBtn}
+                  >
+                    <FaArrowRight />
+                  </Button>
+                </Form.Item>
+              </Form>
               <div className={styles.socialLinks}>
                 {socialLinks.slice(0, 4).map((social) => {
                   const Icon = social.icon;
                   return (
-                    <a 
+                    <a
                       key={social.id}
-                      href={social.url} 
-                      target="_blank" 
+                      href={social.url}
+                      target="_blank"
                       rel="noopener noreferrer"
-                      className={styles.socialLink} 
+                      className={styles.socialLink}
                       aria-label={social.name}
                     >
                       <Icon />

@@ -118,6 +118,18 @@ export const fetchMemberBySlug = async (locale, slug) => {
     throw error;
   }
 };
+export const sendContactEmail = async (locale, emailData) => {
+  try {
+    const data = await fetchWithLocale(`${API_URL}/email/send-contact`, locale, {
+      method: 'POST',
+      body: JSON.stringify(emailData),
+    });
+    return data;
+  } catch (error) {
+    console.error('Failed to send contact email:', error);
+    throw new Error('Failed to send contact email');
+  }
+};
 // Hàm login admin
 export const loginAdmin = async (locale, credentials) => {
   try {

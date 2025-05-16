@@ -100,5 +100,9 @@
   "addressTitle": "Address",
   "blogTitle": "Blog",
   "privacyPolicyContent": "This is the content of the privacy policy. Please update with actual content.",
-  "termsOfServiceContent": "This is the content of the terms of service. Please update with actual content."
+  "termsOfServiceContent": "This is the content of the terms of service. Please update with actual content.",
+  "emailSentSuccess": "Your message has been sent successfully!",
+  "emailSendFailed": "Failed to send your message. Please try again later.",
+  "newsletterSubscribed": "Subscribed successfully!",
+  "newsletterFailed": "Failed to subscribe. Please try again."
 }

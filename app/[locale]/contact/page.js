@@ -1,4 +1,3 @@
-// src/pages/contact/page.js
 "use client";
 import { Button, Form, Input, message } from "antd";
 import Header from "../../../src/components/Header";
@@ -6,7 +5,7 @@ import Footer from "../../../src/components/Footer";
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { fetchContact } from "../../../src/lib/api";
+import { fetchContact, sendContactEmail } from "../../../src/lib/api";
 import { SLUGS_CONFIG } from "../../../src/config/slugs";
 import styles from "./page.module.css";
 
@@ -47,44 +46,19 @@ export default function Contact() {
     return translation || { address: t("notAvailable"), metaDescription: "", keywords: [] };
   };
 
-  const onFinish = (values) => {
-    // Lấy email người nhận từ mainContact
-    const recipientEmail = contacts.mainContact?.mail || "default@example.com";
-    const subject = encodeURIComponent(t("emailSubject") || "Contact Form Submission");
-    const body = encodeURIComponent(
-      `${t("emailBodyGreeting") || "Hello,"}\n\n` +
-      `${t("emailBodyName") || "Name"}: ${values.name}\n` +
-      `${t("emailBodyEmail") || "Email"}: ${values.email}\n` +
-      `${t("emailBodyMessage") || "Message"}: ${values.message}\n\n` +
-      `${t("emailBodyClosing") || "Best regards,"}\n${values.name}`
-    );
-
-    // Tạo URL mailto
-    const mailtoUrl = `mailto:${recipientEmail}?subject=${subject}&body=${body}`;
-    const emailContent = decodeURIComponent(body); // Nội dung email để hiển thị trong thông báo fallback
-
-    // Xác nhận trước khi mở email client
-    const confirm = window.confirm(t("confirmOpenEmail") || "This will open your email app (e.g., Outlook or Gmail). Continue?");
-    if (!confirm) return;
-
+  const onFinish = async (values) => {
     try {
-      // Mở email client
-      const opened = window.open(mailtoUrl, "_blank");
-      if (!opened) throw new Error("Failed to open email client");
-      message.success(t("emailSentSuccess"));
+      await sendContactEmail(locale, {
+        email: values.email,
+        name: values.name,
+        content: values.message,
+      });
+      message.success(t("emailSentSuccess") || "Your message has been sent successfully!");
+      form.resetFields();
     } catch (error) {
-      // Fallback nếu không mở được email client
-      message.error(
-        `${t("emailOpenFailed")} ${recipientEmail}.\n\n` +
-        `${t("emailCopyInstructions") || "Please copy the following content and send it manually:"}\n\n` +
-        `${emailContent}`,
-        10 // Hiển thị thông báo trong 10 giây
-      );
-      console.error("Error opening email client:", error);
+      message.error(t("emailSendFailed") || "Failed to send your message. Please try again later.");
+      console.error("Error sending contact email:", error);
     }
-
-    // Reset form sau khi gửi
-    form.resetFields();
   };
 
   return (
