@@ -14,7 +14,7 @@ export default function MemberList({ locale }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 6; 
+  const pageSize = 3; 
 
   const loadMembers = useCallback(async () => {
     setLoading(true);

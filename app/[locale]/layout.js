@@ -1,5 +1,10 @@
-import { NextIntlClientProvider } from 'next-intl';
-import { notFound } from 'next/navigation';
+import { NextIntlClientProvider } from "next-intl";
+import { notFound } from "next/navigation";
+import { Inter } from "next/font/google";
+import ThemeProvider from "../../src/components/ThemeProvider";
+import "../../src/styles/global.css";
+
+const inter = Inter({ subsets: ["latin"] });
 
 export default async function LocaleLayout({ children, params }) {
   const { locale } = await params;
@@ -13,9 +18,11 @@ export default async function LocaleLayout({ children, params }) {
 
   return (
     <html lang={locale}>
-      <body>
+      <body className={inter.className}>
         <NextIntlClientProvider locale={locale} messages={messages}>
-          {children}
+          <ThemeProvider>
+            {children}
+          </ThemeProvider>
         </NextIntlClientProvider>
       </body>
     </html>

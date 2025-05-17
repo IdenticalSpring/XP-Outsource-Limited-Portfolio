@@ -9,6 +9,7 @@
   flex: 1;
   padding: 60px 20px;
   background-color: #f9f9f9;
+  font-family: var(--font-family);
 }
 
 .sectionContainer {
@@ -21,13 +22,15 @@
 }
 
 .ctaContent h2 {
-  font-size: 2.5rem;
+  font-size: var(--heading-font-size);
+  font-family: var(--font-family);
   margin-bottom: 20px;
   color: #333;
 }
 
 .ctaContent p {
-  font-size: 1.1rem;
+  font-size: var(--text-font-size);
+  font-family: var(--font-family);
   margin-bottom: 40px;
   color: #555;
 }
@@ -66,7 +69,8 @@
 }
 
 .secondaryContactsGrid h3 {
-  font-size: 2rem;
+  font-size: calc(var(--heading-font-size) * 0.8); /* Tương đương 2rem khi headingFontSize=2.5rem */
+  font-family: var(--font-family);
   margin-bottom: 30px;
   color: #333;
 }
@@ -90,14 +94,16 @@
 
 .contactInfo h3,
 .secondaryContact h4 {
-  font-size: 1.5rem;
+  font-size: calc(var(--heading-font-size) * 0.6); /* Tương đương 1.5rem khi headingFontSize=2.5rem */
+  font-family: var(--font-family);
   margin-bottom: 20px;
   color: #333;
 }
 
 .contactItem {
   margin-bottom: 15px;
-  font-size: 1rem;
+  font-size: var(--text-font-size);
+  font-family: var(--font-family);
 }
 
 .contactLabel {
@@ -109,7 +115,8 @@
 .ctaButton {
   width: 100%;
   padding: 12px;
-  font-size: 1rem;
+  font-size: var(--text-font-size);
+  font-family: var(--font-family);
 }
 
 @media (max-width: 768px) {

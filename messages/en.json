@@ -104,5 +104,20 @@
   "emailSentSuccess": "Your message has been sent successfully!",
   "emailSendFailed": "Failed to send your message. Please try again later.",
   "newsletterSubscribed": "Subscribed successfully!",
-  "newsletterFailed": "Failed to subscribe. Please try again."
+  "newsletterFailed": "Failed to subscribe. Please try again.",
+  "banners": "Banners",
+  "blogs": "Blogs",
+  "themeManagement": "Theme Management",
+  "themeManagementTitle": "Theme Management",
+  "logout": "Logout",
+  "saveSuccess": "Theme configuration saved successfully. Please reload to apply.",
+  "saveError": "Failed to save theme configuration",
+  "required": "This field is required",
+  "invalidFontSize": "Please enter a valid value (e.g., 2.5rem)",
+  "primaryColor": "Primary Color",
+  "secondaryColor": "Secondary Color",
+  "fontFamily": "Font Family",
+  "headingFontSize": "Heading Font Size",
+  "textFontSize": "Text Font Size",
+  "save": "Save Configuration"
 }

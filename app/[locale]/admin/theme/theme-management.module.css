@@ -1,0 +1,47 @@
+/* src/app/[locale]/admin/theme/theme-management.module.css */
+.container {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.form {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.preview {
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.previewTitle {
+  font-size: var(--heading-font-size);
+  font-family: var(--font-family);
+}
+
+.previewText {
+  font-size: var(--text-font-size);
+  font-family: var(--font-family);
+}
+
+.previewButton {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.previewButton:hover {
+  background: var(--secondary-color);
+  border-color: var(--secondary-color);
+}

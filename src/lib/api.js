@@ -289,3 +289,23 @@ export const deleteBannerTranslation = async (locale, bannerId, language) => {
     }
   );
 };
+
+export const fetchThemeConfig = async () => {
+  try {
+    const themeConfig = JSON.parse(localStorage.getItem("themeConfig")) || {};
+    return themeConfig;
+  } catch (error) {
+    console.warn("Failed to fetch theme config from localStorage:", error);
+    return {};
+  }
+};
+
+export const saveThemeConfig = async (themeData) => {
+  try {
+    localStorage.setItem("themeConfig", JSON.stringify(themeData));
+    return themeData;
+  } catch (error) {
+    console.error("Failed to save theme config to localStorage:", error);
+    throw new Error("Không thể lưu cấu hình giao diện");
+  }
+};

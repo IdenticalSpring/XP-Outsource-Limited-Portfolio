@@ -1,8 +1,9 @@
-
+/* src/components/Footer.module.css */
 .footer {
   background-color: #222;
   color: rgba(255, 255, 255, 0.7);
- padding: 60px 40px 10px;
+  padding: 60px 40px 10px;
+  font-family: var(--font-family);
 }
 
 .footerTop {
@@ -23,18 +24,20 @@
 
 .footerWidget {
   margin-bottom: 20px;
-  flex: 1; /* Đảm bảo các footerWidget chiếm toàn bộ chiều cao của cột */
+  flex: 1;
 }
 
 .footerLogo {
-  font-size: 1.8rem;
+  font-size: var(--heading-font-size);
+  font-family: var(--font-family);
   font-weight: 700;
   color: white;
 }
 
 .contactTitle {
   color: white;
-  font-size: 1.3rem;
+  font-size: calc(var(--heading-font-size) * 0.65); /* Tương đương 1.3rem khi headingFontSize=2rem */
+  font-family: var(--font-family);
   font-weight: 600;
   margin-bottom: 15px;
   position: relative;
@@ -48,12 +51,12 @@
   left: 0;
   width: 40px;
   height: 2px;
-  background-color: #f15a22;
+  background-color: var(--primary-color);
 }
 
 .contactInfo {
   margin-top: 10px;
-  flex-grow: 1; 
+  flex-grow: 1;
 }
 
 .contactItem {
@@ -63,15 +66,16 @@
 }
 
 .contactIcon {
-  color: #f15a22;
-  font-size: 1.2rem;
+  color: var(--primary-color);
+  font-size: var(--text-font-size);
   margin-right: 15px;
   margin-top: 3px;
 }
 
 .widgetTitle {
   color: white;
-  font-size: 1.3rem;
+  font-size: calc(var(--heading-font-size) * 0.65);
+  font-family: var(--font-family);
   font-weight: 600;
   margin-bottom: 25px;
   position: relative;
@@ -85,7 +89,7 @@
   left: 0;
   width: 40px;
   height: 2px;
-  background-color: #f15a22;
+  background-color: var(--primary-color);
 }
 
 .footerLinks {
@@ -100,18 +104,22 @@
 
 .footerLinks a {
   color: rgba(255, 255, 255, 0.7);
+  font-family: var(--font-family);
+  font-size: var(--text-font-size);
   transition: all 0.3s;
   display: inline-block;
   text-decoration: none;
 }
 
 .footerLinks a:hover {
-  color: #f15a22;
+  color: var(--primary-color);
   transform: translateX(5px);
 }
 
 .newsletterDesc {
   margin-bottom: 20px;
+  font-family: var(--font-family);
+  font-size: var(--text-font-size);
 }
 
 .subscribeForm {
@@ -128,6 +136,8 @@
   background-color: rgba(255, 255, 255, 0.1);
   border-color: rgba(255, 255, 255, 0.2);
   color: white;
+  font-family: var(--font-family);
+  font-size: var(--text-font-size);
 }
 
 .subscribeInput:focus {
@@ -142,8 +152,8 @@
 .subscribeBtn {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
-  background-color: #f15a22;
-  border-color: #f15a22;
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
   height: 45px;
   width: 45px;
   display: flex;
@@ -152,14 +162,14 @@
 }
 
 .subscribeBtn:hover {
-  background-color: #d84a14;
-  border-color: #d84a14;
+  background-color: var(--secondary-color);
+  border-color: var(--secondary-color);
 }
 
 .socialLinks {
   display: flex;
   gap: 15px;
-  margin-top: auto; /* Đẩy social links xuống dưới */
+  margin-top: auto;
 }
 
 .socialLink {
@@ -175,13 +185,13 @@
 }
 
 .socialLink:hover {
-  background-color: #f15a22;
+  background-color: var(--primary-color);
   transform: translateY(-3px);
 }
 
 .footerDivider {
   background-color: rgba(255, 255, 255, 0.1);
-  margin: 10px auto; /* Giảm margin từ 20px xuống 10px */
+  margin: 10px auto;
   max-width: 1200px;
   width: 100%;
 }
@@ -192,13 +202,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: 10px; /* Giảm padding-top từ 20px xuống 10px */
-  padding-bottom: 10px; /* Thêm padding-bottom để cân đối */
+  padding-top: 10px;
+  padding-bottom: 10px;
   width: 100%;
 }
 
 .copyright {
-  font-size: 0.9rem;
+  font-size: var(--text-font-size);
+  font-family: var(--font-family);
 }
 
 .footerNav {
@@ -208,13 +219,14 @@
 
 .footerNav a {
   color: rgba(255, 255, 255, 0.7);
-  font-size: 0.9rem;
+  font-size: var(--text-font-size);
+  font-family: var(--font-family);
   transition: color 0.3s;
   text-decoration: none;
 }
 
 .footerNav a:hover {
-  color: #f15a22;
+  color: var(--primary-color);
 }
 
 /* Responsive */
@@ -227,7 +239,7 @@
 @media (max-width: 768px) {
   .footerBottom {
     flex-direction: column;
-    gap: 10px; /* Giảm gap từ 15px xuống 10px */
+    gap: 10px;
     text-align: center;
     padding-bottom: 15px;
   }
@@ -238,7 +250,7 @@
   }
 
   .footerNav a {
-    font-size: 0.8rem;
+    font-size: calc(var(--text-font-size) * 0.9);
   }
 }
 
@@ -248,12 +260,12 @@
   }
 
   .footerLogo {
-    font-size: 1.6rem;
+    font-size: calc(var(--heading-font-size) * 0.8);
   }
 
   .contactTitle,
   .widgetTitle {
-    font-size: 1.2rem;
+    font-size: calc(var(--heading-font-size) * 0.6);
   }
 
   .footerNav {

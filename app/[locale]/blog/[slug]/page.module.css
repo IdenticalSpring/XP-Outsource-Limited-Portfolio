@@ -12,6 +12,7 @@
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
+  font-family: var(--font-family);
 }
 
 .ant-card {
@@ -22,14 +23,15 @@
 .backToBlogsBtn {
   display: inline-flex;
   align-items: center;
-  gap: 3px; 
+  gap: 3px;
   padding: 5px 8px;
-  border-radius: 14px; 
-  border: 1px solid #f15a22;
+  border-radius: 14px;
+  border: 1px solid var(--primary-color);
   background-color: white;
-  color: #f15a22;
+  color: var(--primary-color);
+  font-family: var(--font-family);
   font-weight: 500;
-  font-size: 0.8rem;
+  font-size: calc(var(--text-font-size) * 0.8);
   transition: all 0.3s ease;
   margin-bottom: 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
@@ -39,21 +41,21 @@
 
 a.backToBlogsBtn {
   text-decoration: none !important;
-  font-size: 0.8rem; 
+  font-size: calc(var(--text-font-size) * 0.8);
 }
 
 .backToBlogsBtn:hover {
-  background-color: #f15a22;
+  background-color: var(--primary-color);
   color: white;
   transform: translateX(-2px);
-  box-shadow: 0 3px 8px rgba(241, 90, 34, 0.25);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
 }
 
 .backToTop {
   position: fixed;
   bottom: 40px;
   right: 40px;
-  background-color: #f15a22 !important;
+  background-color: var(--primary-color) !important;
   color: white !important;
   border: none !important;
   border-radius: 50% !important;
@@ -71,7 +73,7 @@ a.backToBlogsBtn {
 }
 
 .backToTop :global(.anticon) {
-  font-size: 20px !important;
+  font-size: calc(var(--text-font-size) * 1.8); 
   display: block !important;
   line-height: 1 !important;
   margin: 0 !important;
@@ -84,9 +86,9 @@ a.backToBlogsBtn {
 }
 
 .backToTop:hover {
-  background-color: #d84a14;
+  background-color: var(--secondary-color);
   transform: translateY(-3px);
-  box-shadow: 0 4px 15px rgba(241, 90, 34, 0.3);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   opacity: 1;
 }
 
@@ -97,7 +99,7 @@ a.backToBlogsBtn {
 
   .backToBlogsBtn {
     padding: 4px 6px;
-    font-size: 0.75rem; 
+    font-size: calc(var(--text-font-size) * 0.75);
   }
 
   .backToTop {
@@ -108,7 +110,7 @@ a.backToBlogsBtn {
   }
 
   .backToTop :global(.anticon) {
-    font-size: 16px;
+    font-size: calc(var(--text-font-size) * 1.5);
   }
 }
 

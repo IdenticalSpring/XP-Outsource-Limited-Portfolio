@@ -1,14 +1,16 @@
+// src/components/admin/LayoutAdmin.js
 "use client";
 
 import { Layout, Menu } from "antd";
 import { useRouter, usePathname } from "next/navigation";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import styles from "./LayoutAdmin.module.css";
 import {
   PlusOutlined,
   LogoutOutlined,
   PictureOutlined,
   BookOutlined,
+  SkinOutlined, // Icon cho Theme Management
 } from "@ant-design/icons";
 import { useState } from "react";
 
@@ -18,38 +20,46 @@ export default function LayoutAdmin({ children, title }) {
   const router = useRouter();
   const pathname = usePathname();
   const locale = useLocale();
+  const t = useTranslations(); // Thêm useTranslations để hỗ trợ i18n
 
   // Define menu items
   const menuItems = [
     {
       key: "1",
       icon: <PictureOutlined />,
-      label: "Banners",
+      label: t("banners") || "Banners",
       path: `/${locale}/admin/dashboard`,
     },
     {
       key: "2",
       icon: <BookOutlined />,
-      label: "Blogs",
+      label: t("blogs") || "Blogs",
       path: `/${locale}/admin/blogs`,
+    },
+    {
+      key: "3",
+      icon: <SkinOutlined />,
+      label: t("themeManagement") || "Theme Management",
+      path: `/${locale}/admin/theme`,
     },
     {
       key: "logout",
       icon: <LogoutOutlined />,
-      label: "Logout",
+      label: t("logout") || "Logout",
     },
   ];
 
   // Determine active menu based on current pathname
   const activeMenu =
-    menuItems.find((item) => pathname.startsWith(item.path))?.key || "1";
+    menuItems.find((item) => item.path && pathname.startsWith(item.path))?.key ||
+    "1";
 
   const handleMenuClick = ({ key }) => {
     const item = menuItems.find((item) => item.key === key);
     if (key === "logout") {
       sessionStorage.removeItem("adminToken");
       router.push(`/${locale}/admin/login`);
-    } else if (item.path) {
+    } else if (item?.path) {
       router.push(item.path);
     }
   };

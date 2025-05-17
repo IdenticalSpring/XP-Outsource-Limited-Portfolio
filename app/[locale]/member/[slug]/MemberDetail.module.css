@@ -2,6 +2,7 @@
 .memberDetailSection {
   padding: 100px 0;
   background-color: #f9f9f9;
+  font-family: var(--font-family);
 }
 
 .sectionContainer {
@@ -18,26 +19,30 @@
 }
 
 .memberCard h2 {
-  font-size: 2rem;
+  font-size: var(--heading-font-size);
+  font-family: var(--font-family);
   font-weight: 600;
   color: #333;
   margin-bottom: 10px;
 }
 
 .memberCard p {
-  font-size: 1rem;
+  font-size: var(--text-font-size);
+  font-family: var(--font-family);
   color: #666;
   line-height: 1.6;
 }
 
 .backButton {
-  color: #f15a22;
+  color: var(--primary-color);
+  font-family: var(--font-family);
   font-weight: 500;
+  font-size: var(--text-font-size);
   margin-top: 20px;
 }
 
 .backButton:hover {
-  color: #d84a14;
+  color: var(--secondary-color);
 }
 
 .loading {
@@ -53,7 +58,9 @@
 }
 
 .error h3 {
-  color: #ff4d4f;
+  color: #ff4d4f; /* Giữ màu lỗi vì không thuộc theme */
+  font-family: var(--font-family);
+  font-size: calc(var(--heading-font-size) * 0.6); /* Tương đương 1.5rem khi headingFontSize=2.5rem */
   margin-bottom: 20px;
 }
 
@@ -63,12 +70,12 @@
   }
 
   .memberCard h2 {
-    font-size: 1.8rem;
+    font-size: calc(var(--heading-font-size) * 0.9);
   }
 }
 
 @media (max-width: 576px) {
   .memberCard h2 {
-    font-size: 1.5rem;
+    font-size: calc(var(--heading-font-size) * 0.75);
   }
 }

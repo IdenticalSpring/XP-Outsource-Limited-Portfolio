@@ -27,7 +27,8 @@
 }
 
 .sectionHeader h2 {
-  font-size: 2.5rem;
+  font-size: var(--heading-font-size);
+  font-family: var(--font-family);
   font-weight: 700;
   color: #333;
   margin-bottom: 15px;
@@ -43,11 +44,12 @@
   transform: translateX(-50%);
   width: 60px;
   height: 3px;
-  background: #f15a22;
+  background: var(--primary-color);
 }
 
 .sectionHeader p {
-  font-size: 1.1rem;
+  font-size: var(--text-font-size);
+  font-family: var(--font-family);
   color: #666;
   max-width: 700px;
   margin: 0 auto;
@@ -66,11 +68,9 @@
   justify-content: center;
 }
 
-
-
-
 .aboutContent h2 {
-  font-size: 2.5rem;
+  font-size: var(--heading-font-size);
+  font-family: var(--font-family);
   font-weight: 700;
   color: #333;
   margin-bottom: 20px;
@@ -84,11 +84,12 @@
   left: 0;
   width: 60px;
   height: 3px;
-  background: #f15a22;
+  background: var(--primary-color);
 }
 
 .aboutDescription {
-  font-size: 1.1rem;
+  font-size: var(--text-font-size);
+  font-family: var(--font-family);
   color: #666;
   margin-bottom: 30px;
   margin-top: 30px;
@@ -107,7 +108,7 @@
 
 .featureIcon {
   font-size: 2rem; /* Kích thước icon */
-  color: #f15a22;
+  color: var(--primary-color);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -117,29 +118,32 @@
 
 .featureItem h4 {
   font-size: 1.2rem;
+  font-family: var(--font-family);
   font-weight: 600;
   margin-bottom: 5px;
   color: #333;
 }
 
 .featureItem p {
-  font-size: 1rem;
+  font-size: var(--text-font-size);
+  font-family: var(--font-family);
   color: #666;
   margin: 0;
 }
 
 .aboutButton {
-  background: #f15a22;
+  background: var(--primary-color);
   border: none;
   height: 45px;
   padding: 0 25px;
   border-radius: 4px;
   font-weight: 500;
+  font-family: var(--font-family);
   transition: all 0.3s;
 }
 
 .aboutButton:hover {
-  background: #d84a14;
+  background: var(--secondary-color);
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(241, 90, 34, 0.2);
 }
@@ -163,13 +167,15 @@
 
 .achievementItem h3 {
   font-size: 3rem;
+  font-family: var(--font-family);
   font-weight: 700;
-  color: #f15a22;
+  color: var(--primary-color);
   margin-bottom: 10px;
 }
 
 .achievementItem p {
-  font-size: 1.1rem;
+  font-size: var(--text-font-size);
+  font-family: var(--font-family);
   color: #fff;
   margin: 0;
 }
@@ -205,6 +211,7 @@
   justify-content: center;
   color: #999;
   font-weight: 500;
+  font-family: var(--font-family);
   border-radius: 4px;
 }
 
@@ -249,13 +256,15 @@
 }
 
 .ctaContent h2 {
-  font-size: 2.5rem;
+  font-size: var(--heading-font-size);
+  font-family: var(--font-family);
   font-weight: 700;
   margin-bottom: 20px;
 }
 
 .ctaContent p {
-  font-size: 1.2rem;
+  font-size: var(--text-font-size);
+  font-family: var(--font-family);
   margin-bottom: 30px;
   opacity: 0.9;
 }
@@ -263,16 +272,17 @@
 .ctaButton {
   height: 50px;
   padding: 0 30px;
-  font-size: 1.1rem;
-  background: #f15a22;
+  font-size: var(--text-font-size);
+  background: var(--primary-color);
   border: none;
   border-radius: 4px;
   font-weight: 500;
+  font-family: var(--font-family);
   transition: all 0.3s;
 }
 
 .ctaButton:hover {
-  background: #d84a14;
+  background: var(--secondary-color);
   transform: translateY(-3px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
@@ -282,7 +292,7 @@
   .sectionHeader h2,
   .aboutContent h2,
   .ctaContent h2 {
-    font-size: 2.2rem;
+    font-size: calc(var(--heading-font-size) * 0.9);
   }
 
   .featureItem {
@@ -318,7 +328,7 @@
   .sectionHeader h2,
   .aboutContent h2,
   .ctaContent h2 {
-    font-size: 2rem;
+    font-size: calc(var(--heading-font-size) * 0.8);
   }
 
   .achievementItem {
@@ -338,17 +348,17 @@
   .sectionHeader h2,
   .aboutContent h2,
   .ctaContent h2 {
-    font-size: 1.8rem;
+    font-size: calc(var(--heading-font-size) * 0.7);
   }
 
   .ctaContent p {
-    font-size: 1rem;
+    font-size: calc(var(--text-font-size) * 0.9);
   }
 
   .ctaButton {
     height: 45px;
     padding: 0 20px;
-    font-size: 1rem;
+    font-size: calc(var(--text-font-size) * 0.9);
   }
 
   .achievementItem h3 {
@@ -364,6 +374,7 @@
     width: 100px;
   }
 }
+
 .spinnerContainer {
   display: flex;
   justify-content: center;
@@ -374,5 +385,5 @@
 
 /* Tùy chỉnh spinner nếu cần */
 .spinnerContainer .ant-spin-dot-item {
-  background-color: #f15a22; 
+  background-color: var(--primary-color);
 }

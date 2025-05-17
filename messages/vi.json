@@ -104,5 +104,20 @@
   "emailSentSuccess": "Tin nhắn của bạn đã được gửi thành công!",
   "emailSendFailed": "Gửi tin nhắn thất bại. Vui lòng thử lại sau.",
   "newsletterSubscribed": "Đăng ký thành công!",
-  "newsletterFailed": "Đăng ký thất bại. Vui lòng thử lại."
+  "newsletterFailed": "Đăng ký thất bại. Vui lòng thử lại.",
+  "banners": "Banners",
+  "blogs": "Blog",
+  "themeManagement": "Quản lý giao diện",
+  "themeManagementTitle": "Quản lý giao diện",
+  "logout": "Đăng xuất",
+  "saveSuccess": "Lưu cấu hình giao diện thành công. Vui lòng reload để áp dụng.",
+  "saveError": "Không thể lưu cấu hình giao diện",
+  "required": "Trường này là bắt buộc",
+  "invalidFontSize": "Vui lòng nhập giá trị hợp lệ (e.g., 2.5rem)",
+  "primaryColor": "Màu chính",
+  "secondaryColor": "Màu phụ",
+  "fontFamily": "Kiểu chữ",
+  "headingFontSize": "Cỡ chữ tiêu đề",
+  "textFontSize": "Cỡ chữ nội dung",
+  "save": "Lưu cấu hình"
 }

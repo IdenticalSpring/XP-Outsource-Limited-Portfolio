@@ -1,3 +1,4 @@
+/* src/components/Banner.module.css */
 .heroSection {
   position: relative;
   height: 100vh;
@@ -42,10 +43,12 @@
   z-index: 10;
   text-align: center;
   margin-top: 80px; /* Account for header */
+  font-family: var(--font-family);
 }
 
 .heroContent h1 {
-  font-size: 3.5rem;
+  font-size: var(--heading-font-size);
+  font-family: var(--font-family);
   font-weight: 700;
   color: white;
   margin-bottom: 20px;
@@ -53,7 +56,8 @@
 }
 
 .heroContent p {
-  font-size: 1.5rem;
+  font-size: calc(var(--text-font-size) * 1.2); /* Tương đương 1.5rem khi textFontSize=1.25rem */
+  font-family: var(--font-family);
   color: white;
   margin-bottom: 30px;
   opacity: 0.9;
@@ -62,17 +66,18 @@
 .heroButton {
   height: 50px;
   padding: 0 30px;
-  font-size: 1.1rem;
-  background: #f15a22;
+  font-size: var(--text-font-size);
+  font-family: var(--font-family);
+  background: var(--primary-color);
   border: none;
   border-radius: 4px;
   transition: all 0.3s;
 }
 
 .heroButton:hover {
-  background: #d84a14;
+  background: var(--secondary-color);
   transform: translateY(-2px);
-  box-shadow: 0 8px 15px rgba(241, 90, 34, 0.3);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
 }
 
 .carouselNavigation {
@@ -106,11 +111,11 @@
 /* Responsive */
 @media (max-width: 992px) {
   .heroContent h1 {
-    font-size: 3rem;
+    font-size: calc(var(--heading-font-size) * 0.85);
   }
 
   .heroContent p {
-    font-size: 1.3rem;
+    font-size: calc(var(--text-font-size) * 1.1);
   }
 }
 
@@ -121,11 +126,11 @@
   }
 
   .heroContent h1 {
-    font-size: 2.5rem;
+    font-size: calc(var(--heading-font-size) * 0.7);
   }
 
   .heroContent p {
-    font-size: 1.1rem;
+    font-size: var(--text-font-size);
   }
 
   .carouselNavigation {
@@ -136,13 +141,13 @@
 
 @media (max-width: 576px) {
   .heroContent h1 {
-    font-size: 2rem;
+    font-size: calc(var(--heading-font-size) * 0.6);
   }
 
   .heroButton {
     height: 45px;
     padding: 0 20px;
-    font-size: 1rem;
+    font-size: calc(var(--text-font-size) * 0.9);
   }
 }
 
