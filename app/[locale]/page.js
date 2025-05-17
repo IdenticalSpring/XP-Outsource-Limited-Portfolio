@@ -1,6 +1,5 @@
-// src/pages/index.js
 "use client";
-import { Button, Col, Row } from "antd";
+import { Button, Col, Row, Skeleton, Spin } from "antd";
 import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { FaLaptopCode, FaDatabase, FaProjectDiagram } from "react-icons/fa";
@@ -20,6 +19,29 @@ export default function Home() {
   const t = useTranslations();
   const [banners, setBanners] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(false); // Trạng thái loading ban đầu
+  const [showSpinner, setShowSpinner] = useState(false); // Kiểm soát hiển thị spinner
+
+  useEffect(() => {
+    // Kiểm tra xem spinner đã hiển thị trong session này chưa
+    const hasShownSpinner = sessionStorage.getItem("hasShownSpinner");
+
+    if (!hasShownSpinner) {
+      // Nếu chưa hiển thị, bật spinner và đặt trạng thái initialLoading
+      setShowSpinner(true);
+      setInitialLoading(true);
+
+      // Đặt timeout 3 giây cho initialLoading
+      const timer = setTimeout(() => {
+        setInitialLoading(false);
+        // Lưu trạng thái đã hiển thị spinner vào sessionStorage
+        sessionStorage.setItem("hasShownSpinner", "true");
+      }, 3000);
+
+      // Cleanup timer khi component unmount
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   useEffect(() => {
     const loadBanners = async () => {
@@ -28,14 +50,16 @@ export default function Home() {
       setBanners(fetchedBanners);
       setIsLoading(false);
     };
+
+    // Tải dữ liệu banners
     loadBanners();
   }, [locale]);
 
   const mainBanners = banners.filter(
-    (banner) => !SLUGS_CONFIG.banners.find((b) => b.slug === banner.slug && !b.isMainBanner),
+    (banner) => !SLUGS_CONFIG.banners.find((b) => b.slug === banner.slug && !b.isMainBanner)
   );
   const contactBanner = banners.find(
-    (banner) => banner.slug === SLUGS_CONFIG.banners.find((b) => b.key === "contactCtaBanner").slug,
+    (banner) => banner.slug === SLUGS_CONFIG.banners.find((b) => b.key === "contactCtaBanner").slug
   );
 
   const achievements = [
@@ -56,8 +80,7 @@ export default function Home() {
       };
     }
     const translation =
-      banner.translations.find((t) => t.language === locale) ||
-      banner.translations[0];
+      banner.translations.find((t) => t.language === locale) || banner.translations[0];
     console.log("Selected translation for locale", locale, ":", translation);
     return translation;
   };
@@ -70,19 +93,46 @@ export default function Home() {
     return url;
   };
 
+  // Hiển thị Spinner loading toàn trang trong 3 giây (chỉ lần đầu)
+  if (initialLoading && showSpinner) {
+    return (
+      <div className={styles.spinnerContainer}>
+        <Spin size="large" />
+      </div>
+    );
+  }
+
   return (
     <div className={styles.container}>
       <Header />
       <BannerCarousel locale={locale} banners={mainBanners} isLoading={isLoading} />
       <BlogList locale={locale} />
-     
 
       <section id="about" className={styles.aboutSection}>
         <div className={styles.sectionContainer}>
           <Row gutter={[48, 48]} align="middle">
             <Col xs={24} md={12}>
               <div className={styles.aboutImage}>
-                <div className={styles.placeholderImage}></div>
+                {isLoading ? (
+                  <Skeleton.Image
+                    style={{
+                      width: "100%",
+                      height: 400,
+                      borderRadius: 8,
+                      background: "#f0f0f0",
+                    }}
+                    active
+                  />
+                ) : (
+                  <img
+                    src="/images/about-us.jpg"
+                    alt={t("aboutImageAlt") || "About Us"}
+                    style={{ width: "100%", height: 400, objectFit: "cover", borderRadius: 8 }}
+                    onError={(e) => {
+                      e.target.src = "/images/fallback-about.jpg";
+                    }}
+                  />
+                )}
               </div>
             </Col>
             <Col xs={24} md={12}>
@@ -156,10 +206,11 @@ export default function Home() {
         <div className={styles.sectionContainer}>
           <div className={styles.ctaContent}>
             {isLoading ? (
-              <div>
-                <h2>{t("loading")}</h2>
-                <p>{t("loading")}</p>
-              </div>
+              <>
+                <Skeleton.Input style={{ width: 220, height: 48, margin: "16px 0" }} active />
+                <Skeleton paragraph={{ rows: 2 }} active />
+                <Skeleton.Button style={{ width: 160, height: 40, marginTop: 16 }} active />
+              </>
             ) : contactBanner ? (
               (() => {
                 const translation = getTranslation(contactBanner);
@@ -168,11 +219,7 @@ export default function Home() {
                     <h2>{translation.title}</h2>
                     <p>{translation.description}</p>
                     <Link href={translation.buttonLink}>
-                      <Button
-                        type="primary"
-                        size="large"
-                        className={styles.ctaButton}
-                      >
+                      <Button type="primary" size="large" className={styles.ctaButton}>
                         {translation.buttonText}
                       </Button>
                     </Link>

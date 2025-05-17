@@ -159,3 +159,15 @@
     font-size: 0.9rem;
   }
 }
+.serviceCard .ant-skeleton {
+  margin: 0;
+}
+
+.serviceCard .ant-skeleton-image {
+  display: block;
+}
+
+.serviceCard .ant-skeleton-title,
+.serviceCard .ant-skeleton-paragraph {
+  margin: 0;
+}

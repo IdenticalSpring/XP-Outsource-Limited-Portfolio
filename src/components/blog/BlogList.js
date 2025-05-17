@@ -2,7 +2,7 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { Button, Card, Col, Row, Spin } from "antd";
+import { Button, Card, Col, Row, Skeleton } from "antd"; // <== Dùng Skeleton thay vì Spin
 import Link from "next/link";
 import { fetchBlogs } from "../../lib/api";
 import styles from "./BlogList.module.css";
@@ -21,14 +21,9 @@ export default function BlogList({ locale }) {
     setError(null);
     try {
       const response = await fetchBlogs(locale, currentPage, pageSize);
-      console.log(`[Page ${currentPage}] API Response:`, response);
-      if (!response.data || response.data.length === 0) {
-        console.warn(`No blogs returned for page ${currentPage}`);
-      }
       setBlogs(response.data || []);
       setTotalBlogs(response.total || 0);
     } catch (error) {
-      console.error(`[Page ${currentPage}] Failed to load blogs:`, error);
       setError(t("loadError") || "Failed to load blogs. Please try again later.");
       setBlogs([]);
       setTotalBlogs(0);
@@ -38,7 +33,6 @@ export default function BlogList({ locale }) {
   }, [locale, currentPage, t]);
 
   useEffect(() => {
-    console.log(`[Effect] Loading blogs for page ${currentPage}`);
     loadBlogs();
   }, [loadBlogs]);
 
@@ -58,36 +52,26 @@ export default function BlogList({ locale }) {
         top: elementPosition - headerHeight,
         behavior: "smooth",
       });
-      console.log(`[Page ${currentPage}] Scrolled to blog section`);
-    } else {
-      console.warn(`[Page ${currentPage}] Blog section not found`);
     }
   };
 
   const handlePageChange = (newPage) => {
-    console.log(`[HandlePageChange] Changing page from ${currentPage} to ${newPage}`);
     if (newPage !== currentPage) {
       setCurrentPage(newPage);
       scrollToBlogSection();
-    } else {
-      console.warn(`[HandlePageChange] Already on page ${newPage}`);
     }
   };
 
   const renderPagination = () => {
-    if (totalBlogs <= pageSize) return null; // Không hiển thị phân trang nếu chỉ có 1 trang
-
-    const maxVisiblePages = 5; // Số trang tối đa hiển thị cùng lúc
+    if (totalBlogs <= pageSize) return null;
+    const maxVisiblePages = 5;
     const totalPages = Math.ceil(totalBlogs / pageSize);
     const halfVisible = Math.floor(maxVisiblePages / 2);
     let startPage = Math.max(1, currentPage - halfVisible);
     let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-
-    // Điều chỉnh startPage nếu endPage không đủ số trang hiển thị
     if (endPage - startPage + 1 < maxVisiblePages) {
       startPage = Math.max(1, endPage - maxVisiblePages + 1);
     }
-
     const pageNumbers = [];
     for (let i = startPage; i <= endPage; i++) {
       pageNumbers.push(i);
@@ -102,45 +86,27 @@ export default function BlogList({ locale }) {
         >
           &lt;
         </Button>
-
         {startPage > 1 && (
           <>
-            <Button
-              onClick={() => handlePageChange(1)}
-              className={styles.paginationButton}
-            >
-              1
-            </Button>
+            <Button onClick={() => handlePageChange(1)} className={styles.paginationButton}>1</Button>
             {startPage > 2 && <span className={styles.ellipsis}>...</span>}
           </>
         )}
-
         {pageNumbers.map((page) => (
           <Button
             key={page}
             onClick={() => handlePageChange(page)}
-            className={`${styles.paginationButton} ${
-              currentPage === page ? styles.active : ""
-            }`}
+            className={`${styles.paginationButton} ${currentPage === page ? styles.active : ""}`}
           >
             {page}
           </Button>
         ))}
-
         {endPage < totalPages && (
           <>
-            {endPage < totalPages - 1 && (
-              <span className={styles.ellipsis}>...</span>
-            )}
-            <Button
-              onClick={() => handlePageChange(totalPages)}
-              className={styles.paginationButton}
-            >
-              {totalPages}
-            </Button>
+            {endPage < totalPages - 1 && <span className={styles.ellipsis}>...</span>}
+            <Button onClick={() => handlePageChange(totalPages)} className={styles.paginationButton}>{totalPages}</Button>
           </>
         )}
-
         <Button
           disabled={currentPage === totalPages}
           onClick={() => handlePageChange(currentPage + 1)}
@@ -153,9 +119,6 @@ export default function BlogList({ locale }) {
   };
 
   const totalPages = Math.ceil(totalBlogs / pageSize);
-  console.log(
-    `[Render] Current page: ${currentPage}, Page size: ${pageSize}, Total blogs: ${totalBlogs}, Total pages: ${totalPages}`
-  );
 
   return (
     <section id="blog" className={styles.servicesSection}>
@@ -168,10 +131,40 @@ export default function BlogList({ locale }) {
           </p>
         </div>
         {loading ? (
-          <div className={styles.loading}>
-            <Spin size="large" />
-            <p>{t("loading")}</p>
-          </div>
+          <Row gutter={[32, 32]}>
+            {[...Array(pageSize)].map((_, index) => (
+              <Col xs={24} sm={12} md={8} key={index}>
+                <Card className={styles.serviceCard} variant="borderless">
+                  <Skeleton.Image
+                    style={{
+                      width: "100%",
+                      height: 200,
+                      borderRadius: 8,
+                      marginBottom: 16,
+                      background: "#f0f0f0",
+                    }}
+                    active
+                  />
+                  <Skeleton
+                    active
+                    title={{ width: "80%" }}
+                    paragraph={{ rows: 2, width: ["90%", "70%"] }}
+                    style={{ padding: "0 16px" }}
+                  />
+                  <Skeleton.Button
+                    active
+                    style={{
+                      width: 120,
+                      height: 32,
+                      borderRadius: 4,
+                      marginTop: 12,
+                      marginLeft: 16,
+                    }}
+                  />
+                </Card>
+              </Col>
+            ))}
+          </Row>
         ) : error ? (
           <p className={styles.error}>{error}</p>
         ) : blogs.length === 0 ? (
