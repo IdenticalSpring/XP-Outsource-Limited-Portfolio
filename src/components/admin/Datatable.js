@@ -27,7 +27,7 @@ export default function DataTable({
 
   return (
     <Table
-      columns={[...columns, actionColumn]}
+      columns={[...columns]}
       dataSource={dataSource}
       rowKey={rowKey}
       pagination={pagination}

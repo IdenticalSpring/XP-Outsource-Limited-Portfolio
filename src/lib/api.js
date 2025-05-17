@@ -102,7 +102,7 @@ export const fetchMembers = async (locale, page = 1, limit = 3) => {
     );
     return {
       data: response || [],
-      total: response.total || 0, 
+      total: response.total || 0,
     };
   } catch (error) {
     console.warn(`Failed to fetch members, returning empty array`);
@@ -111,7 +111,10 @@ export const fetchMembers = async (locale, page = 1, limit = 3) => {
 };
 export const fetchMemberBySlug = async (locale, slug) => {
   try {
-    const data = await fetchWithLocale(`${API_URL}/member/${locale}/${slug}`, locale);
+    const data = await fetchWithLocale(
+      `${API_URL}/member/${locale}/${slug}`,
+      locale
+    );
     return data || null;
   } catch (error) {
     console.warn(`Failed to fetch member: ${slug}, returning null`);
@@ -120,14 +123,18 @@ export const fetchMemberBySlug = async (locale, slug) => {
 };
 export const sendContactEmail = async (locale, emailData) => {
   try {
-    const data = await fetchWithLocale(`${API_URL}/email/send-contact`, locale, {
-      method: 'POST',
-      body: JSON.stringify(emailData),
-    });
+    const data = await fetchWithLocale(
+      `${API_URL}/email/send-contact`,
+      locale,
+      {
+        method: "POST",
+        body: JSON.stringify(emailData),
+      }
+    );
     return data;
   } catch (error) {
-    console.error('Failed to send contact email:', error);
-    throw new Error('Failed to send contact email');
+    console.error("Failed to send contact email:", error);
+    throw new Error("Failed to send contact email");
   }
 };
 // Hàm login admin
@@ -146,12 +153,13 @@ export const loginAdmin = async (locale, credentials) => {
 // Tạo banner
 export const createBanner = async (locale, bannerData) => {
   try {
-    const data = await fetchWithLocale(`${API_URL}/banner`, locale, {
+    const res = await fetchWithLocale(`${API_URL}/banner`, locale, {
       method: "POST",
       body: JSON.stringify(bannerData),
     });
-    return data.banner; // Trả về banner từ response { message, banner }
+    return res.banner;
   } catch (error) {
+    console.error("Failed to create banner:", error);
     throw new Error("Failed to create banner");
   }
 };
@@ -218,10 +226,56 @@ export const deleteBlog = async (locale, id) => {
 };
 export const fetchContact = async (locale, slug) => {
   try {
-    const data = await fetchWithLocale(`${API_URL}/contact/${locale}/${slug}`, locale);
+    const data = await fetchWithLocale(
+      `${API_URL}/contact/${locale}/${slug}`,
+      locale
+    );
     return data || null;
   } catch (error) {
-    console.warn(`Failed to fetch contact for slug ${slug} and locale ${locale}: ${error.message}`);
+    console.warn(
+      `Failed to fetch contact for slug ${slug} and locale ${locale}: ${error.message}`
+    );
     return null;
   }
+};
+
+export const fetchBannerTranslations = async (locale, bannerId) => {
+  return await fetchWithLocale(`${API_URL}/banner/${bannerId}`, locale);
+};
+
+export const createBannerTranslation = async (
+  locale,
+  bannerId,
+  translationData
+) => {
+  return await fetchWithLocale(`${API_URL}/banner/${bannerId}`, locale, {
+    method: "PUT", // ⚠️ Chúng ta tạm dùng updateBanner
+    body: JSON.stringify({
+      translations: [translationData],
+    }),
+  });
+};
+
+export const updateBannerTranslation = async (
+  locale,
+  bannerId,
+  language,
+  translationData
+) => {
+  return await fetchWithLocale(`${API_URL}/banner/${bannerId}`, locale, {
+    method: "PUT",
+    body: JSON.stringify({
+      translations: [translationData],
+    }),
+  });
+};
+
+export const deleteBannerTranslation = async (locale, bannerId, language) => {
+  return await fetchWithLocale(
+    `${API_URL}/banner/translation/${bannerId}/${language}`,
+    locale,
+    {
+      method: "DELETE",
+    }
+  );
 };

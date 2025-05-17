@@ -42,7 +42,7 @@ export default function LayoutAdmin({ children, title }) {
 
   // Determine active menu based on current pathname
   const activeMenu =
-    menuItems.find((item) => item.path === pathname)?.key || "1";
+    menuItems.find((item) => pathname.startsWith(item.path))?.key || "1";
 
   const handleMenuClick = ({ key }) => {
     const item = menuItems.find((item) => item.key === key);
