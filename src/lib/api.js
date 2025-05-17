@@ -94,19 +94,29 @@ export const fetchBlogs = async (locale, page = 1, limit = 3) => {
     return { data: [], total: 0 };
   }
 };
-export const fetchMembers = async (locale, page = 1, limit = 3) => {
-  try {
-    const response = await fetchWithLocale(
-      `${API_URL}/member?page=${page}&limit=${limit}`,
-      locale
-    );
-    return {
-      data: response || [],
-      total: response.total || 0,
-    };
-  } catch (error) {
-    console.warn(`Failed to fetch members, returning empty array`);
-    return { data: [], total: 0 };
+export const fetchMembers = async (locale, page = 1, limit = 6) => {
+  const maxRetries = 3;
+  let attempt = 0;
+
+  while (attempt < maxRetries) {
+    try {
+      const response = await fetchWithLocale(
+        `${API_URL}/member?page=${page}&limit=${limit}`,
+        locale
+      );
+      return {
+        data: response.data || [], 
+        total: response.total || 0,
+      };
+    } catch (error) {
+      attempt++;
+      console.warn(`Attempt ${attempt} failed to fetch members:`, error);
+      if (attempt === maxRetries) {
+        console.error("Max retries reached for fetching members");
+        return { data: [], total: 0 };
+      }
+      await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
+    }
   }
 };
 export const fetchMemberBySlug = async (locale, slug) => {
