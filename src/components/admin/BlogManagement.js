@@ -31,28 +31,50 @@ export default function BlogsManagement() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingBlog, setEditingBlog] = useState(null);
   const [loading, setLoading] = useState(false);
+  // Trạng thái phân trang
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
 
-  const loadBlogs = useCallback(async () => {
-    setLoading(true);
-    try {
-      const { data: blogsData } = await fetchBlogs(locale);
-      const filteredData = blogsData.filter(
-        (blog) =>
-          blog.translations &&
-          blog.translations.some((t) => t.language === locale)
-      );
-      setBlogs(filteredData);
-    } catch (error) {
-      console.error("Error fetching blogs:", error);
-      message.error(`Không thể tải danh sách blog: ${error.message}`);
-    } finally {
-      setLoading(false);
-    }
-  }, [locale]);
+  const loadBlogs = useCallback(
+    async (page = 1, pageSize = 10) => {
+      setLoading(true);
+      try {
+        const { data: blogsData, total } = await fetchBlogs(
+          locale,
+          page,
+          pageSize
+        );
+        const filteredData = blogsData.filter(
+          (blog) =>
+            blog.translations &&
+            blog.translations.some((t) => t.language === locale)
+        );
+        setBlogs(filteredData);
+        setPagination({ current: page, pageSize, total });
+      } catch (error) {
+        console.error("Error fetching blogs:", error);
+        message.error(`Không thể tải danh sách blog: ${error.message}`);
+        setBlogs([]);
+        setPagination((prev) => ({ ...prev, total: 0 }));
+      } finally {
+        setLoading(false);
+      }
+    },
+    [locale]
+  );
 
   useEffect(() => {
-    loadBlogs();
+    loadBlogs(pagination.current, pagination.pageSize);
   }, [loadBlogs]);
+
+  // Xử lý thay đổi phân trang
+  const handlePaginationChange = (page, pageSize) => {
+    setPagination((prev) => ({ ...prev, current: page, pageSize }));
+    loadBlogs(page, pageSize);
+  };
 
   const columns = [
     { title: "ID", dataIndex: "id", key: "id" },
@@ -91,20 +113,6 @@ export default function BlogsManagement() {
       key: "date",
       render: (text) => moment(text).format("YYYY-MM-DD"),
     },
-    // {
-    //   title: "Actions",
-    //   key: "actions",
-    //   render: (_, record) => (
-    //     <>
-    //       <Button type="link" onClick={() => handleEdit(record)}>
-    //         Edit
-    //       </Button>
-    //       <Button type="link" danger onClick={() => handleDelete(record.id)}>
-    //         Delete
-    //       </Button>
-    //     </>
-    //   ),
-    // },
   ];
 
   const fields = [
@@ -167,7 +175,7 @@ export default function BlogsManagement() {
       rules: [
         { required: true, message: "Vui lòng nhập meta description" },
         { min: 50, message: "Tối thiểu 50 ký tự" },
-        { max: 160, message: "Tối đa 160 ký tự" },
+        { max: 160, message: "Tối đa 160 ký tự " },
       ],
       type: "textarea",
     },
@@ -232,6 +240,7 @@ export default function BlogsManagement() {
         try {
           await deleteBlog(locale, id);
           setBlogs((prev) => prev.filter((b) => b.id !== id));
+          setPagination((prev) => ({ ...prev, total: prev.total - 1 }));
           message.success("Xóa blog thành công");
         } catch (error) {
           message.error(`Xóa blog thất bại: ${error.message}`);
@@ -262,6 +271,7 @@ export default function BlogsManagement() {
       } else {
         const created = await createBlog(locale, blogData);
         setBlogs((prev) => [...prev, created]);
+        setPagination((prev) => ({ ...prev, total: prev.total + 1 }));
         message.success("Thêm blog thành công");
       }
       setIsModalVisible(false);
@@ -289,6 +299,16 @@ export default function BlogsManagement() {
         onEdit={handleEdit}
         onDelete={handleDelete}
         loading={loading}
+        pagination={{
+          ...pagination,
+          showSizeChanger: true,
+          pageSizeOptions: ["10", "20", "50"],
+          showQuickJumper: true,
+          showTotal: (total, range) =>
+            `${range[0]}-${range[1]} của ${total} mục`,
+          onChange: handlePaginationChange,
+          onShowSizeChange: handlePaginationChange,
+        }}
       />
       <FormModal
         visible={isModalVisible}
