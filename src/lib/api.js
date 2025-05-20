@@ -1,12 +1,58 @@
-// src/lib/api.js
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
+// Hàm kiểm tra token có hợp lệ không (dựa trên thời gian hết hạn)
+const isTokenExpired = (token) => {
+  if (!token) return true;
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const currentTime = Math.floor(Date.now() / 1000);
+    return payload.exp < currentTime;
+  } catch (error) {
+    console.error("Error parsing token:", error);
+    return true;
+  }
+};
+
+// Hàm làm mới token (giả sử có endpoint refresh token)
+const refreshToken = async () => {
+  try {
+    const refreshToken = sessionStorage.getItem("refreshToken");
+    if (!refreshToken) throw new Error("No refresh token available");
+
+    const response = await fetch(`${API_URL}/admin/refresh-token`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ refreshToken }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to refresh token: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    sessionStorage.setItem("adminToken", data.accessToken);
+    return data.accessToken;
+  } catch (error) {
+    console.error("Failed to refresh token:", error);
+    sessionStorage.removeItem("adminToken");
+    sessionStorage.removeItem("refreshToken");
+    throw new Error("Unauthorized: Please log in again");
+  }
+};
 
 const fetchWithLocale = async (url, locale, options = {}) => {
   try {
-    const token =
-      typeof window !== "undefined"
-        ? sessionStorage.getItem("adminToken")
-        : null;
+    let token = typeof window !== "undefined"
+      ? sessionStorage.getItem("adminToken")
+      : null;
+
+    // Kiểm tra token hợp lệ
+    if (token && isTokenExpired(token)) {
+      token = await refreshToken();
+    }
+
     const response = await fetch(url, {
       ...options,
       headers: {
@@ -19,50 +65,42 @@ const fetchWithLocale = async (url, locale, options = {}) => {
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error: ${response.status} ${response.statusText}`);
+      const errorData = await response.json().catch(() => ({}));
+      if (response.status === 401) {
+        throw new Error(JSON.stringify({
+          message: "Unauthorized access",
+          error: "Unauthorized",
+          statusCode: 401,
+        }));
+      }
+      throw new Error(JSON.stringify({
+        message: errorData.message || `HTTP error: ${response.statusText}`,
+        statusCode: response.status,
+      }));
     }
 
-    // Handle 204 No Content or empty response
     if (
       response.status === 204 ||
       response.headers.get("content-length") === "0"
     ) {
-      return {}; // Return empty object for no-content responses
+      return {};
     }
 
-    // Attempt to parse JSON for other responses
-    return await response.json();
+    const data = await response.json();
+    console.log(`API response from ${url}:`, data);
+    return data;
   } catch (error) {
     console.error(`API error: ${url}`, error);
     throw error;
   }
 };
-// const fetchWithLocale = async (url, locale, options = {}) => {
-//   try {
-//     const response = await fetch(url, {
-//       ...options,
-//       headers: {
-//         "Accept-Language": locale,
-//         ...options.headers,
-//       },
-//       cache: options.cache || "no-store",
-//     });
-//     if (!response.ok) {
-//       throw new Error(`HTTP error: ${response.status} ${response.statusText}`);
-//     }
-//     return await response.json();
-//   } catch (error) {
-//     console.error(`API error: ${url}`, error);
-//     throw error; // Để hàm gọi xử lý lỗi theo cách riêng
-//   }
-// };
 
 export const fetchBanners = async (locale) => {
   try {
     const data = await fetchWithLocale(`${API_URL}/banner`, locale);
-    return data || [];
+    return Array.isArray(data) ? data : [];
   } catch (error) {
-    console.warn("Failed to fetch banners, returning empty array");
+    console.warn("Failed to fetch banners, returning empty array:", error);
     return [];
   }
 };
@@ -75,10 +113,11 @@ export const fetchBlog = async (locale, slug) => {
     );
     return data;
   } catch (error) {
-    console.warn(`Failed to fetch blog: ${slug}, returning null`);
+    console.warn(`Failed to fetch blog: ${slug}, returning null:`, error);
     return null;
   }
 };
+
 export const fetchBlogs = async (locale, page = 1, limit = 3) => {
   try {
     const response = await fetchWithLocale(
@@ -86,14 +125,15 @@ export const fetchBlogs = async (locale, page = 1, limit = 3) => {
       locale
     );
     return {
-      data: response.blogs || [],
+      data: Array.isArray(response.blogs) ? response.blogs : [],
       total: response.total || 0,
     };
   } catch (error) {
-    console.warn(`Failed to fetch blogs, returning empty array`);
+    console.warn(`Failed to fetch blogs, returning empty array:`, error);
     return { data: [], total: 0 };
   }
 };
+
 export const fetchMembers = async (locale, page = 1, limit = 6) => {
   const maxRetries = 3;
   let attempt = 0;
@@ -105,7 +145,7 @@ export const fetchMembers = async (locale, page = 1, limit = 6) => {
         locale
       );
       return {
-        data: response.data || [], 
+        data: Array.isArray(response.data) ? response.data : [],
         total: response.total || 0,
       };
     } catch (error) {
@@ -119,6 +159,7 @@ export const fetchMembers = async (locale, page = 1, limit = 6) => {
     }
   }
 };
+
 export const fetchMemberBySlug = async (locale, slug) => {
   try {
     const data = await fetchWithLocale(
@@ -127,10 +168,11 @@ export const fetchMemberBySlug = async (locale, slug) => {
     );
     return data || null;
   } catch (error) {
-    console.warn(`Failed to fetch member: ${slug}, returning null`);
+    console.warn(`Failed to fetch member: ${slug}, returning null:`, error);
     throw error;
   }
 };
+
 export const sendContactEmail = async (locale, emailData) => {
   try {
     const data = await fetchWithLocale(
@@ -147,93 +189,105 @@ export const sendContactEmail = async (locale, emailData) => {
     throw new Error("Failed to send contact email");
   }
 };
-// Hàm login admin
+
 export const loginAdmin = async (locale, credentials) => {
   try {
     const data = await fetchWithLocale(`${API_URL}/admin/login`, locale, {
       method: "POST",
       body: JSON.stringify(credentials),
     });
-    return data; // Trả về { accessToken }
+    if (data.accessToken) {
+      sessionStorage.setItem("adminToken", data.accessToken);
+      if (data.refreshToken) {
+        sessionStorage.setItem("refreshToken", data.refreshToken);
+      }
+    }
+    return data;
   } catch (error) {
+    console.error("Login failed:", error);
     throw new Error("Login failed");
   }
 };
 
-// Tạo banner
+export const logoutAdmin = () => {
+  sessionStorage.removeItem("adminToken");
+  sessionStorage.removeItem("refreshToken");
+};
+
 export const createBanner = async (locale, bannerData) => {
   try {
     const res = await fetchWithLocale(`${API_URL}/banner`, locale, {
       method: "POST",
       body: JSON.stringify(bannerData),
     });
-    return res.banner;
+    return res.banner || res;
   } catch (error) {
     console.error("Failed to create banner:", error);
-    throw new Error("Failed to create banner");
+    throw error;
   }
 };
 
-// Cập nhật banner
 export const updateBanner = async (locale, id, bannerData) => {
   try {
     const data = await fetchWithLocale(`${API_URL}/banner/${id}`, locale, {
       method: "PUT",
       body: JSON.stringify(bannerData),
     });
-    return data; // Trả về banner đã cập nhật
+    return data;
   } catch (error) {
-    throw new Error("Failed to update banner");
+    console.error("Failed to update banner:", error);
+    throw error;
   }
 };
 
-// Xóa banner
 export const deleteBanner = async (locale, id) => {
   try {
     await fetchWithLocale(`${API_URL}/banner/${id}`, locale, {
       method: "DELETE",
     });
   } catch (error) {
-    throw new Error("Failed to delete banner");
+    console.error("Failed to delete banner:", error);
+    throw error;
   }
 };
 
-// BLOG
 export const createBlog = async (locale, blogData) => {
   try {
     const data = await fetchWithLocale(`${API_URL}/blog`, locale, {
       method: "POST",
       body: JSON.stringify(blogData),
     });
-    return data.blog || data; // Return data.blog or entire data if structure differs
+    return data.blog || data;
   } catch (error) {
     console.error("Error creating blog:", error);
     throw new Error("Failed to create blog");
   }
 };
-// Cập nhật BLOG
+
 export const updateBlog = async (locale, id, blogData) => {
   try {
     const data = await fetchWithLocale(`${API_URL}/blog/${id}`, locale, {
       method: "PUT",
       body: JSON.stringify(blogData),
     });
-    return data; // Trả về banner đã cập nhật
+    return data;
   } catch (error) {
-    throw new Error("Failed to update banner");
+    console.error("Failed to update blog:", error);
+    throw new Error("Failed to update blog");
   }
 };
 
-// Xóa BLOG
 export const deleteBlog = async (locale, id) => {
   try {
     await fetchWithLocale(`${API_URL}/blog/${id}`, locale, {
       method: "DELETE",
     });
   } catch (error) {
-    throw new Error("Failed to delete banner");
+    console.error("Failed to delete blog:", error);
+    throw new Error("Failed to delete blog");
   }
 };
+
 export const fetchContact = async (locale, slug) => {
   try {
     const data = await fetchWithLocale(
@@ -250,7 +304,14 @@ export const fetchContact = async (locale, slug) => {
 };
 
 export const fetchBannerTranslations = async (locale, bannerId) => {
-  return await fetchWithLocale(`${API_URL}/banner/${bannerId}`, locale);
+  try {
+    const data = await fetchWithLocale(`${API_URL}/banner/${bannerId}`, locale);
+    console.log("Fetched banner translations for banner", bannerId, ":", data);
+    return Array.isArray(data.translations) ? data.translations : [];
+  } catch (error) {
+    console.error("Failed to fetch banner translations:", error);
+    return [];
+  }
 };
 
 export const createBannerTranslation = async (
@@ -258,36 +319,54 @@ export const createBannerTranslation = async (
   bannerId,
   translationData
 ) => {
-  return await fetchWithLocale(`${API_URL}/banner/${bannerId}`, locale, {
-    method: "PUT", // ⚠️ Chúng ta tạm dùng updateBanner
-    body: JSON.stringify({
-      translations: [translationData],
-    }),
-  });
+  try {
+    console.log("Sending create translation payload:", translationData);
+    const data = await fetchWithLocale(`${API_URL}/banner/${bannerId}/translation`, locale, {
+      method: "POST",
+      body: JSON.stringify(translationData),
+    });
+    console.log("Create translation response:", data);
+    return data;
+  } catch (error) {
+    console.error("Failed to create banner translation:", error);
+    throw error;
+  }
 };
 
 export const updateBannerTranslation = async (
   locale,
   bannerId,
-  language,
   translationData
 ) => {
-  return await fetchWithLocale(`${API_URL}/banner/${bannerId}`, locale, {
-    method: "PUT",
-    body: JSON.stringify({
-      translations: [translationData],
-    }),
-  });
+  try {
+    console.log("Sending update translation payload:", translationData);
+    const data = await fetchWithLocale(`${API_URL}/banner/${bannerId}/translation`, locale, {
+      method: "POST",
+      body: JSON.stringify(translationData),
+    });
+    console.log("Update translation response:", data);
+    return data;
+  } catch (error) {
+    console.error("Failed to update banner translation:", error);
+    throw error;
+  }
 };
 
 export const deleteBannerTranslation = async (locale, bannerId, language) => {
-  return await fetchWithLocale(
-    `${API_URL}/banner/translation/${bannerId}/${language}`,
-    locale,
-    {
-      method: "DELETE",
-    }
-  );
+  try {
+    console.log(`Deleting translation for banner ${bannerId}, language ${language}`);
+    await fetchWithLocale(
+      `${API_URL}/banner/translation/${bannerId}/${language}`,
+      locale,
+      {
+        method: "DELETE",
+      }
+    );
+    console.log("Translation deleted successfully");
+  } catch (error) {
+    console.error("Failed to delete banner translation:", error);
+    throw error;
+  }
 };
 
 export const fetchThemeConfig = async () => {

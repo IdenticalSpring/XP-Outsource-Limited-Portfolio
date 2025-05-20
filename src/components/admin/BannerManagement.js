@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import { Button, message, Form, Modal, Select, Input } from "antd";
 import { PlusOutlined, TranslationOutlined } from "@ant-design/icons";
 import styles from "./BannerManagement.module.css";
@@ -16,6 +17,7 @@ import {
   createBannerTranslation,
   updateBannerTranslation,
   deleteBannerTranslation,
+  logoutAdmin,
 } from "@/src/lib/api";
 
 const { Option } = Select;
@@ -31,19 +33,27 @@ const getImageUrl = (imagePath) => {
 
 export default function BannerManagement() {
   const locale = useLocale();
-  const [bannerForm] = Form.useForm();
+  const t = useTranslations("BannerManagement");
+  const router = useRouter();
+  const [bannerForm ] = Form.useForm();
   const [translationForm] = Form.useForm();
   const [banners, setBanners] = useState([]);
   const [translations, setTranslations] = useState([]);
   const [isBannerModalVisible, setIsBannerModalVisible] = useState(false);
-  const [isTranslationModalVisible, setIsTranslationModalVisible] =
-    useState(false);
+  const [isTranslationModalVisible, setIsTranslationModalVisible] = useState(false);
   const [editingBanner, setEditingBanner] = useState(null);
   const [editingTranslation, setEditingTranslation] = useState(null);
   const [selectedBanner, setSelectedBanner] = useState(null);
   const [showTranslations, setShowTranslations] = useState(false);
   const [loading, setLoading] = useState(false);
   const [translationsLoading, setTranslationsLoading] = useState(false);
+
+  // Hàm xử lý lỗi Unauthorized
+  const handleUnauthorized = () => {
+    logoutAdmin();
+    message.error("Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại");
+    router.push(`/${locale}/admin/login`);
+  };
 
   // Hàm tải danh sách banner
   const loadBanners = useCallback(async () => {
@@ -54,11 +64,21 @@ export default function BannerManagement() {
       setBanners(data);
     } catch (error) {
       console.error("Error fetching banners:", error);
+      const errorMessage = error.message;
+      try {
+        const errorData = JSON.parse(errorMessage);
+        if (errorData.statusCode === 401) {
+          handleUnauthorized();
+          return;
+        }
+      } catch (parseError) {
+        console.error("Error parsing error message:", parseError);
+      }
       message.error(`Không thể tải danh sách banner: ${error.message}`);
     } finally {
       setLoading(false);
     }
-  }, [locale]);
+  }, [locale, router]);
 
   // Tải danh sách banner khi component mount hoặc locale thay đổi
   useEffect(() => {
@@ -72,43 +92,28 @@ export default function BannerManagement() {
 
       setTranslationsLoading(true);
       try {
-        const data = await fetchBannerTranslations(locale, bannerId);
-        console.log("Loaded translations:", data);
-
-        // Kiểm tra cấu trúc dữ liệu từ API và trích xuất đúng mảng translations
-        // Nếu API trả về mảng translations trực tiếp hoặc nằm trong một thuộc tính nào đó
-        const translationsArray = Array.isArray(data)
-          ? data
-          : data.translations || [];
-
-        // Hoặc nếu translations nằm trong banner hiện tại
-        const selectedBannerWithTranslations = banners.find(
-          (b) => b.id === bannerId
-        );
-        if (
-          !translationsArray.length &&
-          selectedBannerWithTranslations?.translations?.length
-        ) {
-          setTranslations(selectedBannerWithTranslations.translations);
-        } else {
-          setTranslations(translationsArray);
-        }
+        const translations = await fetchBannerTranslations(locale, bannerId);
+        console.log("Loaded translations for banner", bannerId, ":", translations);
+        setTranslations(translations);
       } catch (error) {
         console.error("Error fetching banner translations:", error);
-        message.error(`Không thể tải danh sách bản dịch: ${error.message}`);
-
-        // Fallback: thử lấy translations từ banner trong state nếu có
-        const selectedBannerWithTranslations = banners.find(
-          (b) => b.id === bannerId
-        );
-        if (selectedBannerWithTranslations?.translations?.length) {
-          setTranslations(selectedBannerWithTranslations.translations);
+        const errorMessage = error.message;
+        try {
+          const errorData = JSON.parse(errorMessage);
+          if (errorData.statusCode === 401) {
+            handleUnauthorized();
+            return;
+          }
+        } catch (parseError) {
+          console.error("Error parsing error message:", parseError);
         }
+        message.error(`Không thể tải danh sách bản dịch: ${error.message}`);
+        setTranslations([]);
       } finally {
         setTranslationsLoading(false);
       }
     },
-    [locale, banners]
+    [locale, router]
   );
 
   // Cấu hình cột cho bảng Banner
@@ -126,7 +131,7 @@ export default function BannerManagement() {
             alt="Banner"
             style={{ width: 50, height: "auto" }}
             onError={(e) => {
-              e.target.src = "/fallback-image.jpg"; // Hiển thị ảnh dự phòng nếu lỗi
+              e.target.src = "/fallback-image.jpg";
             }}
           />
         ) : (
@@ -163,6 +168,13 @@ export default function BannerManagement() {
           >
             Edit
           </Button>
+          <Button
+            type="link"
+            danger
+            onClick={() => handleDeleteTranslation(record.language)}
+          >
+            Delete
+          </Button>
         </>
       ),
     },
@@ -195,7 +207,6 @@ export default function BannerManagement() {
         { value: "en", label: "English" },
       ],
     },
-
     {
       name: "title",
       label: "Title",
@@ -252,21 +263,29 @@ export default function BannerManagement() {
   const handleDeleteBanner = (id) => {
     Modal.confirm({
       title: "Xác nhận xóa",
-      content:
-        "Bạn có chắc chắn muốn xóa banner này? Tất cả các bản dịch của banner này cũng sẽ bị xóa.",
+      content: "Bạn có chắc chắn muốn xóa banner này? Tất cả các bản dịch của banner này cũng sẽ bị xóa.",
       onOk: async () => {
         try {
           await deleteBanner(locale, id);
           setBanners(banners.filter((banner) => banner.id !== id));
           message.success("Xóa banner thành công");
 
-          // Nếu đang hiển thị translations của banner bị xóa, quay về danh sách banner
           if (selectedBanner?.id === id) {
             setShowTranslations(false);
             setSelectedBanner(null);
           }
         } catch (error) {
           console.error("Error deleting banner:", error);
+          const errorMessage = error.message;
+          try {
+            const errorData = JSON.parse(errorMessage);
+            if (errorData.statusCode === 401) {
+              handleUnauthorized();
+              return;
+            }
+          } catch (parseError) {
+            console.error("Error parsing error message:", parseError);
+          }
           message.error(`Không thể xóa banner: ${error.message}`);
         }
       },
@@ -277,23 +296,7 @@ export default function BannerManagement() {
   const handleManageTranslations = (banner) => {
     setSelectedBanner(banner);
     setShowTranslations(true);
-
-    // Log thông tin banner để debug
-    console.log("Selected banner for translations:", banner);
-
-    // Kiểm tra xem banner có chứa translations không
-    if (banner.translations && banner.translations.length > 0) {
-      console.log(
-        "Using translations from banner object:",
-        banner.translations
-      );
-      setTranslations(banner.translations);
-      setTranslationsLoading(false);
-    } else {
-      // Nếu không, tải từ API
-      console.log("Fetching translations from API for banner ID:", banner.id);
-      loadBannerTranslations(banner.id);
-    }
+    loadBannerTranslations(banner.id);
   };
 
   // Xử lý thêm translation mới
@@ -304,30 +307,10 @@ export default function BannerManagement() {
       title: "",
       description: "",
       metaDescription: "",
-      keywords: "", // ⚠️ luôn là chuỗi
+      keywords: "",
       buttonText: "",
       buttonLink: "",
     });
-    setIsTranslationModalVisible(true);
-  };
-
-  // Xử lý chỉnh sửa translation
-  const handleEditTranslation = (translation) => {
-    setEditingTranslation(translation);
-
-    const formData = {
-      language: translation.language,
-      title: translation.title,
-      description: translation.description,
-      metaDescription: translation.metaDescription,
-      keywords: Array.isArray(translation.keywords)
-        ? translation.keywords.join(", ")
-        : translation.keywords || "",
-      buttonText: translation.buttonText,
-      buttonLink: translation.buttonLink,
-    };
-
-    translationForm.setFieldsValue(formData);
     setIsTranslationModalVisible(true);
   };
 
@@ -347,8 +330,21 @@ export default function BannerManagement() {
             translations.filter((t) => t.language !== translationLanguage)
           );
           message.success("Xóa bản dịch thành công");
+          if (selectedBanner?.id) {
+            await loadBannerTranslations(selectedBanner.id);
+          }
         } catch (error) {
           console.error("Error deleting translation:", error);
+          const errorMessage = error.message;
+          try {
+            const errorData = JSON.parse(errorMessage);
+            if (errorData.statusCode === 401) {
+              handleUnauthorized();
+              return;
+            }
+          } catch (parseError) {
+            console.error("Error parsing error message:", parseError);
+          }
           message.error(`Không thể xóa bản dịch: ${error.message}`);
         }
       },
@@ -368,7 +364,7 @@ export default function BannerManagement() {
       const bannerData = {
         slug: values.slug,
         image: values.image,
-        translations: [], // Thêm dòng này để tránh lỗi phía backend
+        translations: [],
       };
 
       if (editingBanner) {
@@ -392,6 +388,16 @@ export default function BannerManagement() {
       bannerForm.resetFields();
     } catch (error) {
       console.error("Error saving banner:", error);
+      const errorMessage = error.message;
+      try {
+        const errorData = JSON.parse(errorMessage);
+        if (errorData.statusCode === 401) {
+          handleUnauthorized();
+          return;
+        }
+      } catch (parseError) {
+        console.error("Error parsing error message:", parseError);
+      }
       message.error(`Lưu banner thất bại: ${error.message}`);
     } finally {
       setLoading(false);
@@ -409,8 +415,6 @@ export default function BannerManagement() {
       setTranslationsLoading(true);
 
       const keywordValue = values.keywords;
-
-      // Ép kiểu an toàn:
       const keywordArray = Array.isArray(keywordValue)
         ? keywordValue
         : typeof keywordValue === "string"
@@ -421,40 +425,50 @@ export default function BannerManagement() {
         : [];
 
       const translationData = {
-        ...values,
+        language: values.language,
+        title: values.title,
+        description: values.description,
+        metaDescription: values.metaDescription,
         keywords: keywordArray,
+        buttonText: values.buttonText,
+        buttonLink: values.buttonLink,
       };
-      if (editingTranslation) {
-        // Cập nhật translation
-        const updatedTranslation = await updateBannerTranslation(
-          locale,
-          selectedBanner.id,
-          editingTranslation.language,
-          translationData
-        );
 
-        setTranslations(
-          translations.map((t) =>
-            t.language === editingTranslation.language ? updatedTranslation : t
-          )
-        );
-        message.success("Cập nhật bản dịch thành công");
-      } else {
-        // Tạo mới translation
-        const newTranslation = await createBannerTranslation(
-          locale,
-          selectedBanner.id,
-          translationData
-        );
+      console.log("Translation data:", translationData);
 
-        setTranslations([...translations, newTranslation]);
-        message.success("Thêm bản dịch thành công");
+      const updatedBanner = editingTranslation
+        ? await updateBannerTranslation(locale, selectedBanner.id, translationData)
+        : await createBannerTranslation(locale, selectedBanner.id, translationData);
+
+      console.log("Updated banner response:", updatedBanner);
+
+      if (!Array.isArray(updatedBanner.translations)) {
+        console.warn("Response translations is not an array:", updatedBanner.translations);
+        throw new Error("Dữ liệu bản dịch từ server không hợp lệ");
       }
+
+      setTranslations(updatedBanner.translations);
+
+      if (selectedBanner?.id) {
+        await loadBannerTranslations(selectedBanner.id);
+      }
+
+      message.success(editingTranslation ? "Cập nhật bản dịch thành công" : "Thêm bản dịch thành công");
 
       setIsTranslationModalVisible(false);
       translationForm.resetFields();
     } catch (error) {
       console.error("Error saving translation:", error);
+      const errorMessage = error.message;
+      try {
+        const errorData = JSON.parse(errorMessage);
+        if (errorData.statusCode === 401) {
+          handleUnauthorized();
+          return;
+        }
+      } catch (parseError) {
+        console.error("Error parsing error message:", parseError);
+      }
       message.error(`Lưu bản dịch thất bại: ${error.message}`);
     } finally {
       setTranslationsLoading(false);
@@ -495,13 +509,11 @@ export default function BannerManagement() {
     ),
   };
 
-  // Thêm cột actions vào bảng Banner
   const bannerColumnsWithActions = [...bannerColumns, bannerActions];
 
   return (
     <div className={styles.container}>
       {!showTranslations ? (
-        // Hiển thị danh sách Banner
         <>
           <div className={styles.tableHeader}>
             <h2>Banners</h2>
@@ -532,7 +544,6 @@ export default function BannerManagement() {
           />
         </>
       ) : (
-        // Hiển thị danh sách Translation của Banner đang chọn
         <>
           <div className={styles.tableHeader}>
             <div className={styles.breadcrumb}>
@@ -554,8 +565,6 @@ export default function BannerManagement() {
             dataSource={translations}
             columns={translationColumns}
             rowKey="language"
-            onEdit={handleEditTranslation}
-            onDelete={(language) => handleDeleteTranslation(language)}
             loading={translationsLoading}
           />
           <FormModal
