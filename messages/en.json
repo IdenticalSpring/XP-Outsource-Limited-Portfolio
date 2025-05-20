@@ -119,5 +119,7 @@
   "fontFamily": "Font Family",
   "headingFontSize": "Heading Font Size",
   "textFontSize": "Text Font Size",
-  "save": "Save Configuration"
+  "save": "Save Configuration",
+  "statistics": "Statistics",
+  "StatisticsManagement": "Statistics Management"
 }

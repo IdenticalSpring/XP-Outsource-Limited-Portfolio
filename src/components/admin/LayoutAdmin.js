@@ -1,4 +1,3 @@
-// src/components/admin/LayoutAdmin.js
 "use client";
 
 import { Layout, Menu } from "antd";
@@ -10,7 +9,8 @@ import {
   LogoutOutlined,
   PictureOutlined,
   BookOutlined,
-  SkinOutlined, // Icon cho Theme Management
+  SkinOutlined,
+  BarChartOutlined, // Icon cho Statistics Management
 } from "@ant-design/icons";
 import { useState } from "react";
 
@@ -41,6 +41,12 @@ export default function LayoutAdmin({ children, title }) {
       icon: <SkinOutlined />,
       label: t("themeManagement") || "Theme Management",
       path: `/${locale}/admin/theme`,
+    },
+    {
+      key: "4",
+      icon: <BarChartOutlined />,
+      label: t("statistics") || "Statistics",
+      path: `/${locale}/admin/statistics`,
     },
     {
       key: "logout",

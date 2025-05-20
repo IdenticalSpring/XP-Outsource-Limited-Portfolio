@@ -1,4 +1,5 @@
 "use client";
+
 import { Button, Col, Row, Skeleton, Spin } from "antd";
 import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -11,7 +12,7 @@ import MemberList from "../../src/components/member/MemberList";
 import Link from "next/link";
 import styles from "./page.module.css";
 import { useState, useEffect } from "react";
-import { fetchBanners } from "../../src/lib/api";
+import { fetchBanners, incrementStatistics } from "../../src/lib/api";
 import { SLUGS_CONFIG } from "../../src/config/slugs";
 
 export default function Home() {
@@ -19,40 +20,44 @@ export default function Home() {
   const t = useTranslations();
   const [banners, setBanners] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [initialLoading, setInitialLoading] = useState(false); // Trạng thái loading ban đầu
-  const [showSpinner, setShowSpinner] = useState(false); // Kiểm soát hiển thị spinner
+  const [initialLoading, setInitialLoading] = useState(false);
+  const [showSpinner, setShowSpinner] = useState(false);
 
   useEffect(() => {
     // Kiểm tra xem spinner đã hiển thị trong session này chưa
     const hasShownSpinner = sessionStorage.getItem("hasShownSpinner");
 
     if (!hasShownSpinner) {
-      // Nếu chưa hiển thị, bật spinner và đặt trạng thái initialLoading
       setShowSpinner(true);
       setInitialLoading(true);
 
-      // Đặt timeout 3 giây cho initialLoading
       const timer = setTimeout(() => {
         setInitialLoading(false);
-        // Lưu trạng thái đã hiển thị spinner vào sessionStorage
         sessionStorage.setItem("hasShownSpinner", "true");
       }, 3000);
 
-      // Cleanup timer khi component unmount
       return () => clearTimeout(timer);
     }
   }, []);
 
   useEffect(() => {
-    const loadBanners = async () => {
+    const loadData = async () => {
       setIsLoading(true);
-      const fetchedBanners = await fetchBanners(locale);
-      setBanners(fetchedBanners);
-      setIsLoading(false);
+      try {
+        // Gọi API để tăng số liệu thống kê
+        await incrementStatistics(locale);
+
+        // Tải dữ liệu banners
+        const fetchedBanners = await fetchBanners(locale);
+        setBanners(fetchedBanners);
+      } catch (error) {
+        console.error("Error loading data:", error);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
-    // Tải dữ liệu banners
-    loadBanners();
+    loadData();
   }, [locale]);
 
   const mainBanners = banners.filter(
@@ -93,7 +98,6 @@ export default function Home() {
     return url;
   };
 
-  // Hiển thị Spinner loading toàn trang trong 3 giây (chỉ lần đầu)
   if (initialLoading && showSpinner) {
     return (
       <div className={styles.spinnerContainer}>

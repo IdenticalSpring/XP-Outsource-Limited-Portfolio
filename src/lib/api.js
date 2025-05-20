@@ -388,3 +388,82 @@ export const saveThemeConfig = async (themeData) => {
     throw new Error("Không thể lưu cấu hình giao diện");
   }
 };
+
+export const fetchStatistics = async (locale, page = 1, limit = 10) => {
+  try {
+    const data = await fetchWithLocale(`${API_URL}/statistics?page=${page}&limit=${limit}`, locale);
+    return data || { data: [], total: 0, page: 1, limit: 10 };
+  } catch (error) {
+    console.warn("Failed to fetch statistics, returning empty array:", error);
+    throw error;
+  }
+};
+
+export const fetchStatisticsByRange = async (locale, start, end) => {
+  try {
+    const data = await fetchWithLocale(`${API_URL}/statistics/range?start=${start}&end=${end}`, locale);
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.warn("Failed to fetch statistics by range, returning empty array:", error);
+    return [];
+  }
+};
+
+export const fetchStatisticsById = async (locale, id) => {
+  try {
+    const data = await fetchWithLocale(`${API_URL}/statistics/${id}`, locale);
+    return data || null;
+  } catch (error) {
+    console.warn(`Failed to fetch statistics with id ${id}, returning null:`, error);
+    throw error;
+  }
+};
+
+export const createStatistics = async (locale, statisticsData) => {
+  try {
+    const data = await fetchWithLocale(`${API_URL}/statistics`, locale, {
+      method: "POST",
+      body: JSON.stringify(statisticsData),
+    });
+    return data;
+  } catch (error) {
+    console.error("Failed to create statistics:", error);
+    throw new Error("Failed to create statistics");
+  }
+};
+
+export const incrementStatistics = async (locale) => {
+  try {
+    const data = await fetchWithLocale(`${API_URL}/statistics/increment`, locale, {
+      method: "POST",
+    });
+    return data;
+  } catch (error) {
+    console.error("Failed to increment statistics:", error);
+    throw new Error("Failed to increment statistics");
+  }
+};
+
+export const updateStatistics = async (locale, id, statisticsData) => {
+  try {
+    const data = await fetchWithLocale(`${API_URL}/statistics/${id}`, locale, {
+      method: "PUT",
+      body: JSON.stringify(statisticsData),
+    });
+    return data;
+  } catch (error) {
+    console.error("Failed to update statistics:", error);
+    throw new Error("Failed to update statistics");
+  }
+};
+
+export const deleteStatistics = async (locale, id) => {
+  try {
+    await fetchWithLocale(`${API_URL}/statistics/${id}`, locale, {
+      method: "DELETE",
+    });
+  } catch (error) {
+    console.error("Failed to delete statistics:", error);
+    throw new Error("Failed to delete statistics");
+  }
+};

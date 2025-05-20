@@ -9,6 +9,7 @@ export default function DataTable({
   onDelete,
   pagination = true,
   loading,
+  onChange, 
 }) {
   // Cột actions mặc định
   const actionColumn = {
@@ -65,6 +66,7 @@ export default function DataTable({
       rowKey={rowKey}
       pagination={finalPagination}
       loading={loading}
+      onChange={onChange} 
     />
   );
 }

@@ -119,5 +119,7 @@
   "fontFamily": "Kiểu chữ",
   "headingFontSize": "Cỡ chữ tiêu đề",
   "textFontSize": "Cỡ chữ nội dung",
-  "save": "Lưu cấu hình"
+  "save": "Lưu cấu hình",
+  "statistics": "Thống kê",
+  "StatisticsManagement": "Quản lý thống kê"
 }
