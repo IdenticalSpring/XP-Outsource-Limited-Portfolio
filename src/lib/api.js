@@ -740,13 +740,19 @@ export const deleteImage = async (locale, filename) => {
   }
 };
 
-export const fetchBlogs = async (locale) => {
+export const fetchBlogs = async (locale, page = 1, limit = 3) => {
   try {
-    const data = await fetchWithLocale(`${API_URL}/blog`, locale);
-    return Array.isArray(data) ? data : [];
+    const response = await fetchWithLocale(
+      `${API_URL}/blog?page=${page}&limit=${limit}`,
+      locale
+    );
+    return {
+      data: Array.isArray(response.blogs) ? response.blogs : [],
+      total: response.total || 0,
+    };
   } catch (error) {
-    console.warn("Failed to fetch blogs, returning empty array:", error);
-    return [];
+    console.warn(`Failed to fetch blogs, returning empty array:`, error);
+    return { data: [], total: 0 };
   }
 };
 

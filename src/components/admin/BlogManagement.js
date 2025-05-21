@@ -40,14 +40,18 @@ export default function BlogManagement() {
   const [blogs, setBlogs] = useState([]);
   const [translations, setTranslations] = useState([]);
   const [isBlogModalVisible, setIsBlogModalVisible] = useState(false);
-  const [isTranslationModalVisible, setIsTranslationModalVisible] =
-    useState(false);
+  const [isTranslationModalVisible, setIsTranslationModalVisible] = useState(false);
   const [editingBlog, setEditingBlog] = useState(null);
   const [editingTranslation, setEditingTranslation] = useState(null);
   const [selectedBlog, setSelectedBlog] = useState(null);
   const [showTranslations, setShowTranslations] = useState(false);
   const [loading, setLoading] = useState(false);
   const [translationsLoading, setTranslationsLoading] = useState(false);
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 3,
+    total: 0,
+  });
 
   // Hàm xử lý lỗi Unauthorized
   const handleUnauthorized = () => {
@@ -56,35 +60,45 @@ export default function BlogManagement() {
     router.push(`/${locale}/admin/login`);
   };
 
-  // Hàm tải danh sách blog
-  const loadBlogs = useCallback(async () => {
-    setLoading(true);
-    try {
-      const data = await fetchBlogs(locale);
-      console.log("Loaded blogs:", data);
-      setBlogs(data);
-    } catch (error) {
-      console.error("Error fetching blogs:", error);
-      const errorMessage = error.message;
+  // Hàm tải danh sách blog với phân trang
+  const loadBlogs = useCallback(
+    async (page = 1, pageSize = 3) => {
+      setLoading(true);
       try {
-        const errorData = JSON.parse(errorMessage);
-        if (errorData.statusCode === 401) {
-          handleUnauthorized();
-          return;
+        const result = await fetchBlogs(locale, page, pageSize);
+        console.log("Loaded blogs:", result);
+        setBlogs(result.data); // API mới trả về { data, total }
+        setPagination({
+          current: page,
+          pageSize,
+          total: result.total,
+        });
+      } catch (error) {
+        console.error("Error fetching blogs:", error);
+        const errorMessage = error.message;
+        try {
+          const errorData = JSON.parse(errorMessage);
+          if (errorData.statusCode === 401) {
+            handleUnauthorized();
+            return;
+          }
+        } catch (parseError) {
+          console.error("Error parsing error message:", parseError);
         }
-      } catch (parseError) {
-        console.error("Error parsing error message:", parseError);
+        message.error(`Không thể tải danh sách blog: ${error.message}`);
+        setBlogs([]);
+        setPagination({ current: 1, pageSize: 3, total: 0 });
+      } finally {
+        setLoading(false);
       }
-      message.error(`Không thể tải danh sách blog: ${error.message}`);
-    } finally {
-      setLoading(false);
-    }
-  }, [locale, router]);
+    },
+    [locale, router]
+  );
 
   // Tải danh sách blog khi component mount hoặc locale thay đổi
   useEffect(() => {
-    loadBlogs();
-  }, [loadBlogs]);
+    loadBlogs(pagination.current, pagination.pageSize);
+  }, [loadBlogs, locale]);
 
   // Hàm tải danh sách translation của một blog
   const loadBlogTranslations = useCallback(
@@ -115,6 +129,20 @@ export default function BlogManagement() {
       }
     },
     [locale, router]
+  );
+
+  // Xử lý thay đổi phân trang
+  const handleTableChange = useCallback(
+    (pagination) => {
+      const { current, pageSize } = pagination;
+      setPagination((prev) => ({
+        ...prev,
+        current,
+        pageSize,
+      }));
+      loadBlogs(current, pageSize);
+    },
+    [loadBlogs]
   );
 
   // Cấu hình cột cho bảng Blog
@@ -374,6 +402,14 @@ export default function BlogManagement() {
         try {
           await deleteBlog(locale, id);
           setBlogs(blogs.filter((blog) => blog.id !== id));
+          setPagination((prev) => ({
+            ...prev,
+            total: prev.total - 1,
+            current:
+              Math.ceil((prev.total - 1) / prev.pageSize) < prev.current
+                ? Math.max(1, prev.current - 1)
+                : prev.current,
+          }));
           message.success("Xóa blog thành công");
 
           if (selectedBlog?.id === id) {
@@ -489,17 +525,21 @@ export default function BlogManagement() {
         ],
       };
 
-      console.log("Blog data being sent:", blogData); // Debug payload
+      console.log("Blog data being sent:", blogData);
 
       if (editingBlog) {
         const updatedBlog = await updateBlog(locale, editingBlog.id, blogData);
         console.log("Updated blog response:", updatedBlog);
-        await loadBlogs(); // Refresh the blog list from backend
+        await loadBlogs(pagination.current, pagination.pageSize);
         message.success("Cập nhật blog thành công");
       } else {
         const newBlog = await createBlog(locale, blogData);
         console.log("Created blog response:", newBlog);
-        await loadBlogs(); // Refresh the blog list from backend
+        setPagination((prev) => ({
+          ...prev,
+          total: prev.total + 1,
+        }));
+        await loadBlogs(pagination.current, pagination.pageSize);
         message.success("Thêm blog thành công");
       }
       setIsBlogModalVisible(false);
@@ -641,6 +681,15 @@ export default function BlogManagement() {
             columns={blogColumnsWithActions}
             rowKey="id"
             loading={loading}
+            pagination={{
+              current: pagination.current,
+              pageSize: pagination.pageSize,
+              total: pagination.total,
+              showSizeChanger: true,
+              pageSizeOptions: ["3", "5", "10", "20"],
+              showTotal: (total) => `Tổng ${total} blog`,
+            }}
+            onChange={handleTableChange}
           />
           <FormModal
             visible={isBlogModalVisible}
