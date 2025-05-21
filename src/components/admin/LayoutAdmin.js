@@ -28,48 +28,50 @@ export default function LayoutAdmin({ children, title }) {
 
   // Define menu items
   const menuItems = [
-    {
+      {
       key: "1",
-      icon: <PictureOutlined />,
-      label: t("banners") || "Banners",
-      path: `/${locale}/admin/dashboard`,
-    },
-    {
-      key: "2",
-      icon: <BookOutlined />,
-      label: t("blogs") || "Blogs",
-      path: `/${locale}/admin/blogs`,
-    },
-    {
-      key: "3",
       icon: <SkinOutlined />,
       label: t("themeManagement") || "Theme Management",
       path: `/${locale}/admin/theme`,
     },
     {
-      key: "4",
+      key: "2",
       icon: <BarChartOutlined />,
       label: t("statistics") || "Statistics",
       path: `/${locale}/admin/statistics`,
     },
     {
-      key: "5",
-      icon: <ContactsOutlined />,
-      label: t("contact") || "Contacts",
-      path: `/${locale}/admin/contact`,
-    },
-    {
-      key: "6",
-      icon: <UsergroupAddOutlined />,
-      label: t("Member") || "Members",
-      path: `/${locale}/admin/member`,
-    },
-    {
-      key: "7",
+      key: "3",
       icon: <FileImageOutlined />,
       label: t("Images") || "Images",
       path: `/${locale}/admin/images`,
     },
+    {
+      key: "4",
+      icon: <PictureOutlined />,
+      label: t("banners") || "Banners",
+      path: `/${locale}/admin/dashboard`,
+    },
+    {
+      key: "5",
+      icon: <BookOutlined />,
+      label: t("blogs") || "Blogs",
+      path: `/${locale}/admin/blogs`,
+    },
+    {
+      key: "6",
+      icon: <ContactsOutlined />,
+      label: t("contact") || "Contacts",
+      path: `/${locale}/admin/contact`,
+    },
+
+    {
+      key: "7",
+      icon: <UsergroupAddOutlined />,
+      label: t("Member") || "Members",
+      path: `/${locale}/admin/member`,
+    },
+
     {
       key: "logout",
       icon: <LogoutOutlined />,
