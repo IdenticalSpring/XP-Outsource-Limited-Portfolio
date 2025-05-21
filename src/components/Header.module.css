@@ -38,11 +38,15 @@
 .logo {
   display: flex;
   align-items: center;
+  text-decoration: none;
+  color: inherit;
 }
 
 .logoText {
+  display: inline-block;
   font-size: var(--heading-font-size);
   font-family: var(--font-family);
+  text-decoration: none;
   font-weight: 700;
   color: white;
   margin: 0;
