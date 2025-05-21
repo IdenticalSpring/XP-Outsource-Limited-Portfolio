@@ -10,7 +10,11 @@ import {
   PictureOutlined,
   BookOutlined,
   SkinOutlined,
-  BarChartOutlined, // Icon cho Statistics Management
+  BarChartOutlined,
+  ContactsOutlined,
+  GroupOutlined,
+  UsergroupAddOutlined,
+  FileImageOutlined, // Icon cho Statistics Management
 } from "@ant-design/icons";
 import { useState } from "react";
 
@@ -49,6 +53,24 @@ export default function LayoutAdmin({ children, title }) {
       path: `/${locale}/admin/statistics`,
     },
     {
+      key: "5",
+      icon: <ContactsOutlined />,
+      label: t("contact") || "Contacts",
+      path: `/${locale}/admin/contact`,
+    },
+    {
+      key: "6",
+      icon: <UsergroupAddOutlined />,
+      label: t("Member") || "Members",
+      path: `/${locale}/admin/member`,
+    },
+    {
+      key: "7",
+      icon: <FileImageOutlined />,
+      label: t("Images") || "Images",
+      path: `/${locale}/admin/images`,
+    },
+    {
       key: "logout",
       icon: <LogoutOutlined />,
       label: t("logout") || "Logout",
@@ -57,8 +79,8 @@ export default function LayoutAdmin({ children, title }) {
 
   // Determine active menu based on current pathname
   const activeMenu =
-    menuItems.find((item) => item.path && pathname.startsWith(item.path))?.key ||
-    "1";
+    menuItems.find((item) => item.path && pathname.startsWith(item.path))
+      ?.key || "1";
 
   const handleMenuClick = ({ key }) => {
     const item = menuItems.find((item) => item.key === key);
