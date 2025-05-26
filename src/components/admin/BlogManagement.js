@@ -32,6 +32,7 @@ const getImageUrl = (imagePath) => {
 };
 
 export default function BlogManagement() {
+  // States và hooks giữ nguyên
   const locale = useLocale();
   const t = useTranslations("BlogManagement");
   const router = useRouter();
@@ -54,13 +55,48 @@ export default function BlogManagement() {
   });
 
   // Hàm xử lý lỗi Unauthorized
-  const handleUnauthorized = () => {
+  const handleUnauthorized = useCallback(() => {
     logoutAdmin();
     message.error("Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại");
     router.push(`/${locale}/admin/login`);
-  };
+  }, [locale, router]);
 
-  // Hàm tải danh sách blog với phân trang
+  // Hàm tiện ích xử lý lỗi
+  const handleErrorResponse = useCallback((error, defaultMessage = "Đã xảy ra lỗi") => {
+    console.error("Error:", error);
+    
+    // Kiểm tra nếu error có response từ axios
+    if (error.response && error.response.data) {
+      const errorData = error.response.data;
+      if (errorData.statusCode === 401) {
+        handleUnauthorized();
+        return { handled: true };
+      }
+      return { message: errorData.message || defaultMessage };
+    }
+
+    // Kiểm tra nếu error.message có thể là JSON
+    if (typeof error.message === 'string') {
+      try {
+        // Chỉ parse khi có khả năng là JSON (bắt đầu bằng '{')
+        if (error.message.trim().startsWith('{')) {
+          const errorData = JSON.parse(error.message);
+          if (errorData.statusCode === 401) {
+            handleUnauthorized();
+            return { handled: true };
+          }
+          return { message: errorData.message || defaultMessage };
+        }
+      } catch (parseError) {
+        // Lỗi parse JSON - không cần xử lý
+      }
+    }
+    
+    // Trả về message gốc
+    return { message: error.message || defaultMessage };
+  }, [handleUnauthorized]);
+
+  // Hàm tải danh sách blog với phân trang - đã sửa
   const loadBlogs = useCallback(
     async (page = 1, pageSize = 3) => {
       setLoading(true);
@@ -74,33 +110,25 @@ export default function BlogManagement() {
           total: result.total,
         });
       } catch (error) {
-        console.error("Error fetching blogs:", error);
-        const errorMessage = error.message;
-        try {
-          const errorData = JSON.parse(errorMessage);
-          if (errorData.statusCode === 401) {
-            handleUnauthorized();
-            return;
-          }
-        } catch (parseError) {
-          console.error("Error parsing error message:", parseError);
+        const result = handleErrorResponse(error, "Không thể tải danh sách blog");
+        if (!result.handled) {
+          message.error(`Không thể tải danh sách blog: ${result.message}`);
         }
-        message.error(`Không thể tải danh sách blog: ${error.message}`);
         setBlogs([]);
         setPagination({ current: 1, pageSize: 3, total: 0 });
       } finally {
         setLoading(false);
       }
     },
-    [locale, router]
+    [locale, handleErrorResponse]
   );
 
   // Tải danh sách blog khi component mount hoặc locale thay đổi
   useEffect(() => {
     loadBlogs(pagination.current, pagination.pageSize);
-  }, [loadBlogs, locale]);
+  }, [loadBlogs, locale, pagination.current, pagination.pageSize]);
 
-  // Hàm tải danh sách translation của một blog
+  // Hàm tải danh sách translation của một blog - đã sửa
   const loadBlogTranslations = useCallback(
     async (blogId) => {
       if (!blogId) return;
@@ -111,24 +139,16 @@ export default function BlogManagement() {
         console.log("Loaded translations for blog", blogId, ":", translations);
         setTranslations(translations);
       } catch (error) {
-        console.error("Error fetching blog translations:", error);
-        const errorMessage = error.message;
-        try {
-          const errorData = JSON.parse(errorMessage);
-          if (errorData.statusCode === 401) {
-            handleUnauthorized();
-            return;
-          }
-        } catch (parseError) {
-          console.error("Error parsing error message:", parseError);
+        const result = handleErrorResponse(error, "Không thể tải danh sách bản dịch");
+        if (!result.handled) {
+          message.error(`Không thể tải danh sách bản dịch: ${result.message}`);
         }
-        message.error(`Không thể tải danh sách bản dịch: ${error.message}`);
         setTranslations([]);
       } finally {
         setTranslationsLoading(false);
       }
     },
-    [locale, router]
+    [locale, handleErrorResponse]
   );
 
   // Xử lý thay đổi phân trang
@@ -362,38 +382,8 @@ export default function BlogManagement() {
     },
   ];
 
-  // Xử lý thêm blog mới
-  const handleAddBlog = () => {
-    setEditingBlog(null);
-    blogForm.resetFields();
-    blogForm.setFieldsValue({
-      language: "en",
-      title: "",
-      metaTitle: "",
-      metaDescription: "",
-      ogTitle: "",
-      ogDescription: "",
-      content: "",
-    });
-    setIsBlogModalVisible(true);
-  };
-
-  // Xử lý chỉnh sửa blog
-  const handleEditBlog = (blog) => {
-    setEditingBlog(blog);
-    blogForm.setFieldsValue({
-      slug: blog.slug,
-      image: blog.image,
-      altText: blog.altText,
-      canonicalUrl: blog.canonicalUrl,
-      date: blog.date ? moment(blog.date) : null,
-      // Optionally set translation fields if editing includes a default translation
-    });
-    setIsBlogModalVisible(true);
-  };
-
-  // Xử lý xóa blog với xác nhận
-  const handleDeleteBlog = (id) => {
+  // Xử lý xóa blog với xác nhận - đã sửa
+  const handleDeleteBlog = useCallback((id) => {
     Modal.confirm({
       title: "Xác nhận xóa",
       content:
@@ -417,48 +407,17 @@ export default function BlogManagement() {
             setSelectedBlog(null);
           }
         } catch (error) {
-          console.error("Error deleting blog:", error);
-          const errorMessage = error.message;
-          try {
-            const errorData = JSON.parse(errorMessage);
-            if (errorData.statusCode === 401) {
-              handleUnauthorized();
-              return;
-            }
-          } catch (parseError) {
-            console.error("Error parsing error message:", parseError);
+          const result = handleErrorResponse(error, "Không thể xóa blog");
+          if (!result.handled) {
+            message.error(`Không thể xóa blog: ${result.message}`);
           }
-          message.error(`Không thể xóa blog: ${error.message}`);
         }
       },
     });
-  };
+  }, [locale, blogs, selectedBlog, handleErrorResponse]);
 
-  // Xử lý quản lý translations
-  const handleManageTranslations = (blog) => {
-    setSelectedBlog(blog);
-    setShowTranslations(true);
-    loadBlogTranslations(blog.id);
-  };
-
-  // Xử lý thêm translation mới
-  const handleAddTranslation = () => {
-    setEditingTranslation(null);
-    translationForm.resetFields();
-    translationForm.setFieldsValue({
-      language: "en",
-      title: "",
-      metaTitle: "",
-      metaDescription: "",
-      ogTitle: "",
-      ogDescription: "",
-      content: "",
-    });
-    setIsTranslationModalVisible(true);
-  };
-
-  // Xử lý xóa translation với xác nhận
-  const handleDeleteTranslation = (translationLanguage) => {
+  // Xử lý xóa translation với xác nhận - đã sửa
+  const handleDeleteTranslation = useCallback((translationLanguage) => {
     Modal.confirm({
       title: "Xác nhận xóa",
       content: "Bạn có chắc chắn muốn xóa bản dịch này?",
@@ -477,29 +436,24 @@ export default function BlogManagement() {
             await loadBlogTranslations(selectedBlog.id);
           }
         } catch (error) {
-          console.error("Error deleting translation:", error);
-          const errorMessage = error.message;
-          try {
-            const errorData = JSON.parse(errorMessage);
-            if (errorData.statusCode === 401) {
-              handleUnauthorized();
-              return;
-            }
-          } catch (parseError) {
-            console.error("Error parsing error message:", parseError);
+          const result = handleErrorResponse(error, "Không thể xóa bản dịch");
+          if (!result.handled) {
+            message.error(`Không thể xóa bản dịch: ${result.message}`);
           }
-          message.error(`Không thể xóa bản dịch: ${error.message}`);
         }
       },
     });
-  };
+  }, [locale, selectedBlog, translations, loadBlogTranslations, handleErrorResponse]);
 
-  // Xử lý lưu blog (thêm hoặc cập nhật)
+  // Xử lý lưu blog (thêm hoặc cập nhật) - đã sửa
   const handleBlogModalOk = async () => {
     try {
       const values = await blogForm.validateFields();
+      
+      // Sử dụng validation của form thay vì throw Error
       if (!values.image) {
-        throw new Error("Image path is required");
+        message.error("Image path is required");
+        return;
       }
 
       setLoading(true);
@@ -545,24 +499,16 @@ export default function BlogManagement() {
       setIsBlogModalVisible(false);
       blogForm.resetFields();
     } catch (error) {
-      console.error("Error saving blog:", error);
-      const errorMessage = error.message;
-      try {
-        const errorData = JSON.parse(errorMessage);
-        if (errorData.statusCode === 401) {
-          handleUnauthorized();
-          return;
-        }
-      } catch (parseError) {
-        console.error("Error parsing error message:", parseError);
+      const result = handleErrorResponse(error, "Lưu blog thất bại");
+      if (!result.handled) {
+        message.error(`Lưu blog thất bại: ${result.message}`);
       }
-      message.error(`Lưu blog thất bại: ${error.message}`);
     } finally {
       setLoading(false);
     }
   };
 
-  // Xử lý lưu translation (thêm hoặc cập nhật)
+  // Xử lý lưu translation (thêm hoặc cập nhật) - đã sửa
   const handleTranslationModalOk = async () => {
     try {
       const values = await translationForm.validateFields();
@@ -595,7 +541,8 @@ export default function BlogManagement() {
           "Response translations is not an array:",
           updatedBlog.translations
         );
-        throw new Error("Dữ liệu bản dịch từ server không hợp lệ");
+        message.error("Dữ liệu bản dịch từ server không hợp lệ");
+        return;
       }
 
       setTranslations(updatedBlog.translations);
@@ -613,21 +560,66 @@ export default function BlogManagement() {
       setIsTranslationModalVisible(false);
       translationForm.resetFields();
     } catch (error) {
-      console.error("Error saving translation:", error);
-      const errorMessage = error.message;
-      try {
-        const errorData = JSON.parse(errorMessage);
-        if (errorData.statusCode === 401) {
-          handleUnauthorized();
-          return;
-        }
-      } catch (parseError) {
-        console.error("Error parsing error message:", parseError);
+      const result = handleErrorResponse(error, "Lưu bản dịch thất bại");
+      if (!result.handled) {
+        message.error(`Lưu bản dịch thất bại: ${result.message}`);
       }
-      message.error(`Lưu bản dịch thất bại: ${error.message}`);
     } finally {
       setTranslationsLoading(false);
     }
+  };
+
+  // Xử lý thêm blog mới
+  const handleAddBlog = () => {
+    setEditingBlog(null);
+    blogForm.resetFields();
+    blogForm.setFieldsValue({
+      language: "en",
+      title: "",
+      metaTitle: "",
+      metaDescription: "",
+      ogTitle: "",
+      ogDescription: "",
+      content: "",
+    });
+    setIsBlogModalVisible(true);
+  };
+
+  // Xử lý chỉnh sửa blog
+  const handleEditBlog = (blog) => {
+    setEditingBlog(blog);
+    blogForm.setFieldsValue({
+      slug: blog.slug,
+      image: blog.image,
+      altText: blog.altText,
+      canonicalUrl: blog.canonicalUrl,
+      date: blog.date ? moment(blog.date) : null,
+      // Optionally set translation fields if editing includes a default translation
+    });
+    setIsBlogModalVisible(true);
+  };
+
+  // Xử lý quản lý translations
+  const handleManageTranslations = (blog) => {
+    setSelectedBlog(blog);
+    setShowTranslations(true);
+    loadBlogTranslations(blog.id);
+  };
+
+  // Xử lý thêm translation mới
+  const handleAddTranslation = () => {
+    setEditingTranslation(null);
+    translationForm.resetFields();
+    translationForm.setFieldsValue({
+      language: "en",
+      title: "",
+      metaTitle: "",
+      metaDescription: "",
+      ogTitle: "",
+      ogDescription: "",
+      content: "",
+    });
+    setIsTranslationModalVisible(true);
   };
 
   // Xử lý quay lại danh sách blog

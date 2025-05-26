@@ -121,5 +121,8 @@
   "textFontSize": "Text Font Size",
   "save": "Save Configuration",
   "statistics": "Statistics",
-  "StatisticsManagement": "Statistics Management"
+  "StatisticsManagement": "Statistics Management",
+  "ContactManagement": "Contact Management",
+  "Images": "Images",
+  "Member": "Members"
 }

@@ -67,18 +67,16 @@ export default function MemberManagement() {
         setMembers(response.data);
         setPagination({ page, limit, total: response.total });
       } catch (error) {
-        console.error("Error fetching members:", error);
-        const errorMessage = error.message;
-        try {
-          const errorData = JSON.parse(errorMessage);
-          if (errorData.statusCode === 401) {
-            handleUnauthorized();
-            return;
-          }
-        } catch (parseError) {
-          console.error("Error parsing error message:", parseError);
+        const { isUnauthorized, message: errorMessage } = handleErrorResponse(
+          error,
+          "Không thể tải danh sách member"
+        );
+
+        if (isUnauthorized) {
+          handleUnauthorized();
+        } else {
+          message.error(`Không thể tải danh sách member: ${errorMessage}`);
         }
-        message.error(`Không thể tải danh sách member: ${error.message}`);
       } finally {
         setLoading(false);
       }
@@ -111,18 +109,16 @@ export default function MemberManagement() {
         );
         setTranslations(translations);
       } catch (error) {
-        console.error("Error fetching member translations:", error);
-        const errorMessage = error.message;
-        try {
-          const errorData = JSON.parse(errorMessage);
-          if (errorData.statusCode === 401) {
-            handleUnauthorized();
-            return;
-          }
-        } catch (parseError) {
-          console.error("Error parsing error message:", parseError);
+        const { isUnauthorized, message: errorMessage } = handleErrorResponse(
+          error,
+          "Không thể tải danh sách bản dịch"
+        );
+
+        if (isUnauthorized) {
+          handleUnauthorized();
+        } else {
+          message.error(`Không thể tải danh sách bản dịch: ${errorMessage}`);
         }
-        message.error(`Không thể tải danh sách bản dịch: ${error.message}`);
         setTranslations([]);
       } finally {
         setTranslationsLoading(false);
@@ -330,18 +326,16 @@ export default function MemberManagement() {
             setSelectedMember(null);
           }
         } catch (error) {
-          console.error("Error deleting member:", error);
-          const errorMessage = error.message;
-          try {
-            const errorData = JSON.parse(errorMessage);
-            if (errorData.statusCode === 401) {
-              handleUnauthorized();
-              return;
-            }
-          } catch (parseError) {
-            console.error("Error parsing error message:", parseError);
+          const { isUnauthorized, message: errorMessage } = handleErrorResponse(
+            error,
+            "Không thể xóa member"
+          );
+
+          if (isUnauthorized) {
+            handleUnauthorized();
+          } else {
+            message.error(`Không thể xóa member: ${errorMessage}`);
           }
-          message.error(`Không thể xóa member: ${error.message}`);
         }
       },
     });
@@ -462,7 +456,8 @@ export default function MemberManagement() {
     try {
       const values = await translationForm.validateFields();
       if (!values.language) {
-        throw new Error("Language is required");
+        message.error("Language is required");
+        return;
       }
 
       setTranslationsLoading(true);
@@ -521,17 +516,17 @@ export default function MemberManagement() {
       translationForm.resetFields();
     } catch (error) {
       console.error("Error saving translation:", error);
-      const errorMessage = error.message;
-      try {
-        const errorData = JSON.parse(errorMessage);
-        if (errorData.statusCode === 401) {
-          handleUnauthorized();
-          return;
-        }
-      } catch (parseError) {
-        console.error("Error parsing error message:", parseError);
+
+      const { isUnauthorized, message: errorMessage } = handleErrorResponse(
+        error,
+        "Lưu bản dịch thất bại"
+      );
+
+      if (isUnauthorized) {
+        handleUnauthorized();
+      } else {
+        message.error(`Lưu bản dịch thất bại: ${errorMessage}`);
       }
-      message.error(`Lưu bản dịch thất bại: ${error.message}`);
     } finally {
       setTranslationsLoading(false);
     }
@@ -578,6 +573,39 @@ export default function MemberManagement() {
   };
 
   const memberColumnsWithActions = [...memberColumns, memberActions];
+
+  // Thêm hàm tiện ích xử lý lỗi
+  const handleErrorResponse = (error, defaultMessage) => {
+    console.error("Error:", error);
+
+    // Kiểm tra nếu error có response từ axios
+    if (error.response && error.response.data) {
+      const errorData = error.response.data;
+      if (errorData.statusCode === 401) {
+        return { isUnauthorized: true };
+      }
+      return { message: errorData.message || defaultMessage };
+    }
+
+    // Kiểm tra nếu error.message có thể là JSON
+    if (typeof error.message === "string") {
+      try {
+        // Chỉ parse khi có khả năng là JSON (bắt đầu bằng '{')
+        if (error.message.trim().startsWith("{")) {
+          const errorData = JSON.parse(error.message);
+          if (errorData.statusCode === 401) {
+            return { isUnauthorized: true };
+          }
+          return { message: errorData.message || defaultMessage };
+        }
+      } catch (parseError) {
+        // Lỗi không phải JSON, bỏ qua
+      }
+    }
+
+    // Trả về message gốc
+    return { message: error.message || defaultMessage };
+  };
 
   return (
     <div className={styles.container}>

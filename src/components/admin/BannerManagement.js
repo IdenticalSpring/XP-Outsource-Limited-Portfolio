@@ -409,7 +409,9 @@ export default function BannerManagement() {
     try {
       const values = await translationForm.validateFields();
       if (!values.language) {
-        throw new Error("Language is required");
+        // Không cần throw error, form validation sẽ xử lý
+        message.error("Language is required");
+        return;
       }
 
       setTranslationsLoading(true);
@@ -459,17 +461,37 @@ export default function BannerManagement() {
       translationForm.resetFields();
     } catch (error) {
       console.error("Error saving translation:", error);
-      const errorMessage = error.message;
-      try {
-        const errorData = JSON.parse(errorMessage);
+      
+      // Kiểm tra nếu error có thuộc tính response hoặc là chuỗi JSON
+      if (error.response && error.response.data) {
+        // Trường hợp error từ axios
+        const errorData = error.response.data;
         if (errorData.statusCode === 401) {
           handleUnauthorized();
           return;
         }
-      } catch (parseError) {
-        console.error("Error parsing error message:", parseError);
+        message.error(`Lưu bản dịch thất bại: ${errorData.message || 'Unknown error'}`);
+      } else {
+        // Trường hợp error là string thông thường
+        // Kiểm tra xem có phải JSON không
+        try {
+          // Chỉ parse khi error.message có khả năng là JSON (bắt đầu bằng '{')
+          if (typeof error.message === 'string' && error.message.trim().startsWith('{')) {
+            const errorData = JSON.parse(error.message);
+            if (errorData.statusCode === 401) {
+              handleUnauthorized();
+              return;
+            }
+            message.error(`Lưu bản dịch thất bại: ${errorData.message}`);
+          } else {
+            // Error message thông thường không phải JSON
+            message.error(`Lưu bản dịch thất bại: ${error.message}`);
+          }
+        } catch (parseError) {
+          // Nếu không parse được, hiển thị message nguyên bản
+          message.error(`Lưu bản dịch thất bại: ${error.message}`);
+        }
       }
-      message.error(`Lưu bản dịch thất bại: ${error.message}`);
     } finally {
       setTranslationsLoading(false);
     }
