@@ -1,8 +1,7 @@
-// src/components/blog/BlogList.js
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { Button, Card, Col, Row, Skeleton } from "antd"; // <== Dùng Skeleton thay vì Spin
+import { Button, Card, Col, Row, Skeleton } from "antd";
 import Link from "next/link";
 import { fetchBlogs } from "../../lib/api";
 import styles from "./BlogList.module.css";
@@ -14,7 +13,10 @@ export default function BlogList({ locale }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const pageSize = 3;
+  const autoPlayInterval = 4000; // 4 seconds
+  const intervalRef = useRef(null);
 
   const loadBlogs = useCallback(async () => {
     setLoading(true);
@@ -24,7 +26,9 @@ export default function BlogList({ locale }) {
       setBlogs(response.data || []);
       setTotalBlogs(response.total || 0);
     } catch (error) {
-      setError(t("loadError") || "Failed to load blogs. Please try again later.");
+      setError(
+        t("loadError") || "Failed to load blogs. Please try again later."
+      );
       setBlogs([]);
       setTotalBlogs(0);
     } finally {
@@ -35,6 +39,56 @@ export default function BlogList({ locale }) {
   useEffect(() => {
     loadBlogs();
   }, [loadBlogs]);
+
+  // Auto-play functionality
+  useEffect(() => {
+    if (loading || totalBlogs <= pageSize) return;
+
+    const totalPages = Math.ceil(totalBlogs / pageSize);
+
+    intervalRef.current = setInterval(() => {
+      setIsTransitioning(true);
+      setCurrentPage((prevPage) => {
+        const nextPage = prevPage >= totalPages ? 1 : prevPage + 1;
+        return nextPage;
+      });
+
+      // Reset transition state after animation
+      setTimeout(() => setIsTransitioning(false), 600);
+    }, autoPlayInterval);
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [loading, totalBlogs, pageSize, autoPlayInterval]);
+
+  // Pause auto-play on user interaction
+  const pauseAutoPlay = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+  };
+
+  // Resume auto-play after user interaction
+  const resumeAutoPlay = useCallback(() => {
+    pauseAutoPlay();
+    const totalPages = Math.ceil(totalBlogs / pageSize);
+
+    if (totalPages > 1) {
+      setTimeout(() => {
+        intervalRef.current = setInterval(() => {
+          setIsTransitioning(true);
+          setCurrentPage((prevPage) => {
+            const nextPage = prevPage >= totalPages ? 1 : prevPage + 1;
+            return nextPage;
+          });
+          setTimeout(() => setIsTransitioning(false), 600);
+        }, autoPlayInterval);
+      }, 1500);
+    }
+  }, [totalBlogs, pageSize, autoPlayInterval]);
 
   const getImageUrl = (imagePath) => {
     if (!imagePath) return "";
@@ -47,7 +101,8 @@ export default function BlogList({ locale }) {
     const blogSection = document.getElementById("blog");
     if (blogSection) {
       const headerHeight = document.querySelector(".header")?.offsetHeight || 0;
-      const elementPosition = blogSection.getBoundingClientRect().top + window.pageYOffset;
+      const elementPosition =
+        blogSection.getBoundingClientRect().top + window.pageYOffset;
       window.scrollTo({
         top: elementPosition - headerHeight,
         behavior: "smooth",
@@ -56,11 +111,45 @@ export default function BlogList({ locale }) {
   };
 
   const handlePageChange = (newPage) => {
-    if (newPage !== currentPage) {
+    if (newPage !== currentPage && !isTransitioning) {
+      pauseAutoPlay();
+      setIsTransitioning(true);
       setCurrentPage(newPage);
       scrollToBlogSection();
+
+      setTimeout(() => {
+        setIsTransitioning(false);
+        resumeAutoPlay();
+      }, 600);
     }
   };
+
+  // const toggleAutoPlay = () => {
+  //   setIsAutoPlay(!isAutoPlay);
+  //   if (!isAutoPlay) {
+  //     resumeAutoPlay();
+  //   } else {
+  //     pauseAutoPlay();
+  //   }
+  // };
+
+  // const renderAutoPlayControl = () => {
+  //   const totalPages = Math.ceil(totalBlogs / pageSize);
+  //   if (totalPages <= 1) return null;
+
+  //   return (
+  //     <div className={styles.autoPlayControl}>
+  //       <Button
+  //         type="text"
+  //         icon={isAutoPlay ? <PauseCircleOutlined /> : <PlayCircleOutlined />}
+  //         onClick={toggleAutoPlay}
+  //         className={styles.autoPlayButton}
+  //       >
+  //         {isAutoPlay ? t("pause") || "Pause" : t("play") || "Play"}
+  //       </Button>
+  //     </div>
+  //   );
+  // };
 
   const renderPagination = () => {
     if (totalBlogs <= pageSize) return null;
@@ -80,7 +169,7 @@ export default function BlogList({ locale }) {
     return (
       <div className={styles.pagination}>
         <Button
-          disabled={currentPage === 1}
+          disabled={currentPage === 1 || isTransitioning}
           onClick={() => handlePageChange(currentPage - 1)}
           className={`${styles.paginationButton} ${styles.arrowButton}`}
         >
@@ -88,7 +177,13 @@ export default function BlogList({ locale }) {
         </Button>
         {startPage > 1 && (
           <>
-            <Button onClick={() => handlePageChange(1)} className={styles.paginationButton}>1</Button>
+            <Button
+              onClick={() => handlePageChange(1)}
+              className={styles.paginationButton}
+              disabled={isTransitioning}
+            >
+              1
+            </Button>
             {startPage > 2 && <span className={styles.ellipsis}>...</span>}
           </>
         )}
@@ -96,19 +191,30 @@ export default function BlogList({ locale }) {
           <Button
             key={page}
             onClick={() => handlePageChange(page)}
-            className={`${styles.paginationButton} ${currentPage === page ? styles.active : ""}`}
+            disabled={isTransitioning}
+            className={`${styles.paginationButton} ${
+              currentPage === page ? styles.active : ""
+            }`}
           >
             {page}
           </Button>
         ))}
         {endPage < totalPages && (
           <>
-            {endPage < totalPages - 1 && <span className={styles.ellipsis}>...</span>}
-            <Button onClick={() => handlePageChange(totalPages)} className={styles.paginationButton}>{totalPages}</Button>
+            {endPage < totalPages - 1 && (
+              <span className={styles.ellipsis}>...</span>
+            )}
+            <Button
+              onClick={() => handlePageChange(totalPages)}
+              className={styles.paginationButton}
+              disabled={isTransitioning}
+            >
+              {totalPages}
+            </Button>
           </>
         )}
         <Button
-          disabled={currentPage === totalPages}
+          disabled={currentPage === totalPages || isTransitioning}
           onClick={() => handlePageChange(currentPage + 1)}
           className={`${styles.paginationButton} ${styles.arrowButton}`}
         >
@@ -124,7 +230,7 @@ export default function BlogList({ locale }) {
     <section id="blog" className={styles.servicesSection}>
       <div className={styles.sectionContainer}>
         <div className={styles.sectionHeader}>
-          <h2>{t("blogSectionTitle") || "Our Blogs"}</h2>
+          <h2>{t("blogSectionTitle") || "Core Members"}</h2>
           <p>
             {t("blogSectionDescription") ||
               "Discover our latest insights and updates on technology and innovation"}
@@ -171,48 +277,57 @@ export default function BlogList({ locale }) {
           <p>{t("noBlogsAvailable") || "No blogs available at the moment."}</p>
         ) : (
           <>
-            <Row gutter={[32, 32]}>
-              {blogs
-                .filter((blog) => blog.translations && blog.translations.length > 0)
-                .map((blog) => {
-                  const translation =
-                    blog.translations.find((t) => t.language === locale) ||
-                    blog.translations[0];
-                  if (!translation || !translation.title) {
-                    return null;
-                  }
-                  return (
-                    <Col xs={24} sm={12} md={8} key={blog.id}>
-                      <Card
-                        className={styles.serviceCard}
-                        variant="borderless"
-                        cover={
-                          blog.image && (
-                            <img
-                              src={getImageUrl(blog.image)}
-                              alt={blog.altText || translation.title}
-                              style={{ height: 200, objectFit: "cover" }}
-                            />
-                          )
-                        }
-                      >
-                        <h3>{translation.title}</h3>
-                        <p>
-                          {translation.metaDescription ||
-                            (translation.content
-                              ? translation.content.slice(0, 100) + "..."
-                              : t("noDescription") || "No description available.")}
-                        </p>
-                        <Link href={`/${locale}/blog/${blog.slug}`}>
-                          <Button type="link" className={styles.learnMoreBtn}>
-                            {t("readMore") || "Read More"}
-                          </Button>
-                        </Link>
-                      </Card>
-                    </Col>
-                  );
-                })}
-            </Row>
+            <div
+              className={`${styles.blogContainer} ${
+                isTransitioning ? styles.transitioning : ""
+              }`}
+            >
+              <Row gutter={[32, 32]}>
+                {blogs
+                  .filter(
+                    (blog) => blog.translations && blog.translations.length > 0
+                  )
+                  .map((blog) => {
+                    const translation =
+                      blog.translations.find((t) => t.language === locale) ||
+                      blog.translations[0];
+                    if (!translation || !translation.title) {
+                      return null;
+                    }
+                    return (
+                      <Col xs={24} sm={12} md={8} key={blog.id}>
+                        <Card
+                          className={styles.serviceCard}
+                          variant="borderless"
+                          cover={
+                            blog.image && (
+                              <img
+                                src={getImageUrl(blog.image)}
+                                alt={blog.altText || translation.title}
+                                style={{ height: 200, objectFit: "cover" }}
+                              />
+                            )
+                          }
+                        >
+                          <h3>{translation.title}</h3>
+                          <p>
+                            {translation.metaDescription ||
+                              (translation.content
+                                ? translation.content.slice(0, 100) + "..."
+                                : t("noDescription") ||
+                                  "No description available.")}
+                          </p>
+                          <Link href={`/${locale}/blog/${blog.slug}`}>
+                            <Button type="link" className={styles.learnMoreBtn}>
+                              {t("readMore") || "Read More"}
+                            </Button>
+                          </Link>
+                        </Card>
+                      </Col>
+                    );
+                  })}
+              </Row>
+            </div>
             {renderPagination()}
           </>
         )}
