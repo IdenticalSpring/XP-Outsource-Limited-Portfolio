@@ -125,5 +125,7 @@
   "StatisticsManagement": "Quản lý thống kê",
   "ContactManagement": "Quản lý liên hệ",
   "Images": "Hình ảnh",
-  "Member": "Thành viên"
+  "Member": "Thành viên",
+  "coreMembersTitle": "Thành viên nòng cốt",
+  "regularMembersTitle": "Thành viên"
 }

@@ -60,7 +60,7 @@
 }
 
 .memberCard h3 {
-  font-size: calc(var(--heading-font-size) * 0.6); /* Tương đương 1.5rem khi headingFontSize=2.5rem */
+  font-size: calc(var(--heading-font-size) * 0.6);
   font-family: var(--font-family);
   font-weight: 600;
   margin-bottom: 15px;
@@ -130,7 +130,7 @@
 }
 
 .arrowButton {
-  font-size: calc(var(--text-font-size) * 1.1); /* Tương đương 1.2rem khi textFontSize=1.1rem */
+  font-size: calc(var(--text-font-size) * 1.1);
   font-weight: 700;
 }
 
@@ -153,11 +153,16 @@
 }
 
 .error {
-  color: #ff4d4f; /* Giữ màu lỗi vì không thuộc theme */
+  color: #ff4d4f;
   font-family: var(--font-family);
   font-size: var(--text-font-size);
   text-align: center;
   margin: 20px 0;
+}
+
+/* Added styling for spacing between sections */
+.memberSection {
+  margin-bottom: 60px;
 }
 
 @media (max-width: 768px) {
@@ -171,6 +176,10 @@
 
   .sectionHeader h2 {
     font-size: calc(var(--heading-font-size) * 0.8);
+  }
+
+  .memberSection {
+    margin-bottom: 40px;
   }
 }
 

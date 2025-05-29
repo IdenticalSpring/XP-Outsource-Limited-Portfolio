@@ -1,4 +1,3 @@
-// src/components/admin/FormModal.js
 import {
   Modal,
   Form,
@@ -9,6 +8,7 @@ import {
   Checkbox,
   Button,
   Radio,
+  Switch,
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 
@@ -24,6 +24,7 @@ const inputTypeMap = {
   upload: Upload,
   checkbox: Checkbox,
   radio: Radio.Group,
+  switch: Switch, // Thêm ánh xạ cho switch
 };
 
 export default function FormModal({
@@ -89,7 +90,7 @@ export default function FormModal({
       );
     }
 
-    // Các loại input khác (input, textarea, date, checkbox)
+    // Các loại input khác (input, textarea, date, checkbox, switch)
     return <InputComponent {...(field.props || {})} />;
   };
 
@@ -113,7 +114,12 @@ export default function FormModal({
             name={field.name}
             label={field.label}
             rules={field.rules}
-            valuePropName={field.type === "checkbox" ? "checked" : undefined}
+            valuePropName={
+              field.type === "checkbox" || field.type === "switch"
+                ? "checked"
+                : undefined
+            }
+            initialValue={field.initialValue}
           >
             {renderInput(field)}
           </Form.Item>

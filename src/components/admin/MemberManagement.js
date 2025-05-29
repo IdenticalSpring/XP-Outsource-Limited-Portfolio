@@ -172,6 +172,12 @@ export default function MemberManagement() {
       key: "isActive",
       render: (isActive) => (isActive ? "Yes" : "No"),
     },
+    {
+      title: "Core",
+      dataIndex: "core",
+      key: "core",
+      render: (core) => (core ? "Yes" : "No"),
+    },
   ];
 
   // Cấu hình cột cho bảng Translation
@@ -236,6 +242,13 @@ export default function MemberManagement() {
       type: "switch",
       valuePropName: "checked",
       initialValue: true,
+    },
+    {
+      name: "core",
+      label: "Core Member",
+      type: "switch",
+      valuePropName: "checked",
+      initialValue: false,
     },
     {
       name: "canonicalUrl",
@@ -304,6 +317,7 @@ export default function MemberManagement() {
       image: member.image,
       slug: member.slug,
       isActive: member.isActive,
+      core: member.core,
       canonicalUrl: member.canonicalUrl,
     });
     setIsMemberModalVisible(true);
@@ -409,6 +423,7 @@ export default function MemberManagement() {
         image: values.image,
         slug: values.slug,
         isActive: values.isActive,
+        core: values.core,
         canonicalUrl: values.canonicalUrl || undefined,
         translations: [],
       };
