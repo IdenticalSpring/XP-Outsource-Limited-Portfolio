@@ -375,16 +375,14 @@ export default function BannerManagement() {
       };
 
       if (editingBanner) {
-        // Lấy các bản dịch hiện có của banner đang chỉnh sửa
         const existingTranslations = await fetchBannerTranslations(
           locale,
           editingBanner.id
         );
         bannerData = {
           ...bannerData,
-          translations: existingTranslations || [], // Giữ lại các bản dịch hiện có
+          translations: existingTranslations || [],
         };
-
         const updatedBanner = await updateBanner(
           locale,
           editingBanner.id,
@@ -400,6 +398,7 @@ export default function BannerManagement() {
         const newBanner = await createBanner(locale, bannerData);
         setBanners([...banners, newBanner]);
         message.success("Thêm banner thành công");
+        window.location.reload(); // Tải lại toàn bộ trang
       }
       setIsBannerModalVisible(false);
       bannerForm.resetFields();

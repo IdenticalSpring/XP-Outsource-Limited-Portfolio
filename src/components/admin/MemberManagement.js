@@ -464,6 +464,7 @@ export default function MemberManagement() {
         const newMember = await createMember(locale, memberData);
         setMembers([...members, newMember]);
         message.success("Thêm member thành công");
+        window.location.reload();
       }
       setIsMemberModalVisible(false);
       memberForm.resetFields();

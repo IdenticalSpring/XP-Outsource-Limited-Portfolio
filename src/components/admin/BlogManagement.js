@@ -529,57 +529,39 @@ export default function BlogManagement() {
         return;
       }
       setLoading(true);
-      const blogData = {
-        slug: values.slug,
-        image: values.image,
-        altText: values.altText,
-        canonicalUrl: values.canonicalUrl,
-        date: values.date
-          ? values.date.toISOString()
-          : new Date().toISOString(),
-        type: values.type,
-        translations: [
-          {
-            language: values.language,
-            title: values.title,
-            metaTitle: values.metaTitle,
-            metaDescription: values.metaDescription,
-            ogTitle: values.ogTitle,
-            ogDescription: values.ogDescription,
-            content: values.content,
-          },
-        ],
-      };
-      console.log("Blog data being sent:", blogData);
+
+      const updateData = {};
+      if (values.slug) updateData.slug = values.slug;
+      if (values.image) updateData.image = values.image;
+      if (values.altText) updateData.altText = values.altText;
+      if (values.canonicalUrl) updateData.canonicalUrl = values.canonicalUrl;
+      if (values.date) updateData.date = values.date.toISOString();
+      if (values.type) updateData.type = values.type;
+
       if (editingBlog) {
-        const updateData = {};
-        if (values.slug) updateData.slug = values.slug;
-        if (values.image) updateData.image = values.image;
-        if (values.altText) updateData.altText = values.altText;
-        if (values.canonicalUrl) updateData.canonicalUrl = values.canonicalUrl;
-        if (values.date) updateData.date = values.date.toISOString();
-        if (values.type) updateData.type = values.type;
-        if (
-          values.language &&
-          values.title &&
-          values.metaTitle &&
-          values.metaDescription &&
-          values.ogTitle &&
-          values.ogDescription &&
-          values.content
-        ) {
-          updateData.translations = [
-            {
-              language: values.language,
-              title: values.title,
-              metaTitle: values.metaTitle,
-              metaDescription: values.metaDescription,
-              ogTitle: values.ogTitle,
-              ogDescription: values.ogDescription,
-              content: values.content,
-            },
-          ];
-        }
+        // Lấy các bản dịch hiện có của blog
+        const existingTranslations = await fetchBlogTranslations(
+          locale,
+          editingBlog.id
+        );
+        const newTranslation = {
+          language: values.language,
+          title: values.title,
+          metaTitle: values.metaTitle,
+          metaDescription: values.metaDescription,
+          ogTitle: values.ogTitle,
+          ogDescription: values.ogDescription,
+          content: values.content,
+        };
+
+        // Gộp bản dịch mới vào danh sách bản dịch hiện có
+        const updatedTranslations = existingTranslations.filter(
+          (t) => t.language !== values.language
+        ); // Loại bỏ bản dịch cũ cho ngôn ngữ hiện tại (nếu có)
+        updatedTranslations.push(newTranslation); // Thêm bản dịch mới
+
+        updateData.translations = updatedTranslations;
+
         const updatedBlog = await updateBlog(
           locale,
           editingBlog.id,
@@ -589,6 +571,27 @@ export default function BlogManagement() {
         await loadBlogs(pagination.current, pagination.pageSize, filterType);
         message.success("Cập nhật blog thành công");
       } else {
+        const blogData = {
+          slug: values.slug,
+          image: values.image,
+          altText: values.altText,
+          canonicalUrl: values.canonicalUrl,
+          date: values.date
+            ? values.date.toISOString()
+            : new Date().toISOString(),
+          type: values.type,
+          translations: [
+            {
+              language: values.language,
+              title: values.title,
+              metaTitle: values.metaTitle,
+              metaDescription: values.metaDescription,
+              ogTitle: values.ogTitle,
+              ogDescription: values.ogDescription,
+              content: values.content,
+            },
+          ],
+        };
         const newBlog = await createBlog(locale, blogData);
         console.log("Created blog response:", newBlog);
         setPagination((prev) => ({
@@ -597,6 +600,7 @@ export default function BlogManagement() {
         }));
         await loadBlogs(pagination.current, pagination.pageSize, filterType);
         message.success("Thêm blog thành công");
+        window.location.reload();
       }
       setIsBlogModalVisible(false);
       blogForm.resetFields();

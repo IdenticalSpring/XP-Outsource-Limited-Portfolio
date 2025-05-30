@@ -357,6 +357,7 @@ export default function ContactManagement() {
         const newContact = await createContact(locale, contactData);
         setContacts([...contacts, newContact]);
         message.success("Thêm contact thành công");
+        window.location.reload();
       }
       setIsContactModalVisible(false);
       contactForm.resetFields();
