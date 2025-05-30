@@ -35,12 +35,13 @@ export default function BannerManagement() {
   const locale = useLocale();
   const t = useTranslations("BannerManagement");
   const router = useRouter();
-  const [bannerForm ] = Form.useForm();
+  const [bannerForm] = Form.useForm();
   const [translationForm] = Form.useForm();
   const [banners, setBanners] = useState([]);
   const [translations, setTranslations] = useState([]);
   const [isBannerModalVisible, setIsBannerModalVisible] = useState(false);
-  const [isTranslationModalVisible, setIsTranslationModalVisible] = useState(false);
+  const [isTranslationModalVisible, setIsTranslationModalVisible] =
+    useState(false);
   const [editingBanner, setEditingBanner] = useState(null);
   const [editingTranslation, setEditingTranslation] = useState(null);
   const [selectedBanner, setSelectedBanner] = useState(null);
@@ -93,7 +94,12 @@ export default function BannerManagement() {
       setTranslationsLoading(true);
       try {
         const translations = await fetchBannerTranslations(locale, bannerId);
-        console.log("Loaded translations for banner", bannerId, ":", translations);
+        console.log(
+          "Loaded translations for banner",
+          bannerId,
+          ":",
+          translations
+        );
         setTranslations(translations);
       } catch (error) {
         console.error("Error fetching banner translations:", error);
@@ -263,7 +269,8 @@ export default function BannerManagement() {
   const handleDeleteBanner = (id) => {
     Modal.confirm({
       title: "Xác nhận xóa",
-      content: "Bạn có chắc chắn muốn xóa banner này? Tất cả các bản dịch của banner này cũng sẽ bị xóa.",
+      content:
+        "Bạn có chắc chắn muốn xóa banner này? Tất cả các bản dịch của banner này cũng sẽ bị xóa.",
       onOk: async () => {
         try {
           await deleteBanner(locale, id);
@@ -356,18 +363,28 @@ export default function BannerManagement() {
     try {
       const values = await bannerForm.validateFields();
       if (!values.image) {
-        throw new Error("Image path is required");
+        throw new Error("Đường dẫn ảnh là bắt buộc");
       }
 
       setLoading(true);
 
-      const bannerData = {
+      let bannerData = {
         slug: values.slug,
         image: values.image,
         translations: [],
       };
 
       if (editingBanner) {
+        // Lấy các bản dịch hiện có của banner đang chỉnh sửa
+        const existingTranslations = await fetchBannerTranslations(
+          locale,
+          editingBanner.id
+        );
+        bannerData = {
+          ...bannerData,
+          translations: existingTranslations || [], // Giữ lại các bản dịch hiện có
+        };
+
         const updatedBanner = await updateBanner(
           locale,
           editingBanner.id,
@@ -387,7 +404,7 @@ export default function BannerManagement() {
       setIsBannerModalVisible(false);
       bannerForm.resetFields();
     } catch (error) {
-      console.error("Error saving banner:", error);
+      console.error("Lỗi khi lưu banner:", error);
       const errorMessage = error.message;
       try {
         const errorData = JSON.parse(errorMessage);
@@ -396,7 +413,7 @@ export default function BannerManagement() {
           return;
         }
       } catch (parseError) {
-        console.error("Error parsing error message:", parseError);
+        console.error("Lỗi phân tích thông báo lỗi:", parseError);
       }
       message.error(`Lưu banner thất bại: ${error.message}`);
     } finally {
@@ -439,13 +456,24 @@ export default function BannerManagement() {
       console.log("Translation data:", translationData);
 
       const updatedBanner = editingTranslation
-        ? await updateBannerTranslation(locale, selectedBanner.id, translationData)
-        : await createBannerTranslation(locale, selectedBanner.id, translationData);
+        ? await updateBannerTranslation(
+            locale,
+            selectedBanner.id,
+            translationData
+          )
+        : await createBannerTranslation(
+            locale,
+            selectedBanner.id,
+            translationData
+          );
 
       console.log("Updated banner response:", updatedBanner);
 
       if (!Array.isArray(updatedBanner.translations)) {
-        console.warn("Response translations is not an array:", updatedBanner.translations);
+        console.warn(
+          "Response translations is not an array:",
+          updatedBanner.translations
+        );
         throw new Error("Dữ liệu bản dịch từ server không hợp lệ");
       }
 
@@ -455,13 +483,17 @@ export default function BannerManagement() {
         await loadBannerTranslations(selectedBanner.id);
       }
 
-      message.success(editingTranslation ? "Cập nhật bản dịch thành công" : "Thêm bản dịch thành công");
+      message.success(
+        editingTranslation
+          ? "Cập nhật bản dịch thành công"
+          : "Thêm bản dịch thành công"
+      );
 
       setIsTranslationModalVisible(false);
       translationForm.resetFields();
     } catch (error) {
       console.error("Error saving translation:", error);
-      
+
       // Kiểm tra nếu error có thuộc tính response hoặc là chuỗi JSON
       if (error.response && error.response.data) {
         // Trường hợp error từ axios
@@ -470,13 +502,18 @@ export default function BannerManagement() {
           handleUnauthorized();
           return;
         }
-        message.error(`Lưu bản dịch thất bại: ${errorData.message || 'Unknown error'}`);
+        message.error(
+          `Lưu bản dịch thất bại: ${errorData.message || "Unknown error"}`
+        );
       } else {
         // Trường hợp error là string thông thường
         // Kiểm tra xem có phải JSON không
         try {
           // Chỉ parse khi error.message có khả năng là JSON (bắt đầu bằng '{')
-          if (typeof error.message === 'string' && error.message.trim().startsWith('{')) {
+          if (
+            typeof error.message === "string" &&
+            error.message.trim().startsWith("{")
+          ) {
             const errorData = JSON.parse(error.message);
             if (errorData.statusCode === 401) {
               handleUnauthorized();
