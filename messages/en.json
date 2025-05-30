@@ -125,5 +125,6 @@
   "StatisticsManagement": "Statistics Management",
   "ContactManagement": "Contact Management",
   "Images": "Images",
-  "Member": "Members"
+  "Member": "Members",
+  "MemberManagement": "Member Management"
 }
